@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVY STONE · Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background: linear-gradient(145deg, #e9f0f5 0%, #d1dee9 100%); min-height: 100vh; padding: 1.5rem 1rem; display: flex; justify-content: center; }
+        .app-container { max-width: 1400px; width: 100%; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 80px; padding: 0.6rem 1.8rem; margin-bottom: 1.8rem; box-shadow: 0 10px 25px -10px rgba(0,30,50,0.2); border: 1px solid rgba(255,255,255,0.8); flex-wrap: wrap; gap: 0.8rem; }
+        .brand { display: flex; align-items: center; gap: 0.6rem; }
+        .brand i { font-size: 2rem; color: #0b3b4b; background: #d9e7f0; padding: 0.45rem; border-radius: 1.2rem; }
+        .brand h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; color: #0a2e3c; }
+        .brand span { font-size: 0.7rem; font-weight: 600; background: #e4eef5; padding: 0.2rem 0.9rem; border-radius: 40px; margin-left: 0.4rem; color: #1d5a6e; }
+        .nav-tabs { display: flex; gap: 0.5rem; background: #ffffffc0; padding: 0.3rem; border-radius: 50px; border: 1px solid #b9d3e3; }
+        .nav-tab { padding: 0.55rem 1.4rem; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.2s; color: #1d495a; background: transparent; border: none; display: flex; align-items: center; gap: 0.4rem; text-decoration: none; position: relative; }
+        .nav-tab.active { background: #0b3b4b; color: white; box-shadow: 0 8px 16px -8px #0b3b4b80; }
+        .nav-tab i { font-size: 0.9rem; }
+        .nav-tab .badge-count { background: #ef4444; color: white; font-size: 0.65rem; font-weight: 800; border-radius: 30px; padding: 0.1rem 0.45rem; min-width: 18px; text-align: center; display: none; margin-left: 0.2rem; }
+        .nav-tab .badge-count.show { display: inline-block; }
+        .card { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-radius: 2rem; box-shadow: 0 25px 45px -18px rgba(0,25,40,0.3), 0 0 0 1px rgba(255,255,255,0.6) inset; padding: 2rem 2.2rem; border: 1px solid rgba(255,255,255,0.7); margin-bottom: 1.5rem; }
+        .admin-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+        .admin-toolbar h2 { font-size: 1.4rem; color: #0f3b4a; display: flex; align-items: center; gap: 0.6rem; }
+        .search-admin { display: flex; align-items: center; background: white; border-radius: 50px; padding: 0.2rem 0.2rem 0.2rem 1.2rem; border: 1.5px solid #cbdde8; gap: 0.5rem; }
+        .search-admin i { color: #3d7b8c; }
+        .search-admin input { border: none; outline: none; padding: 0.6rem 0.4rem; font-size: 0.85rem; width: 220px; background: transparent; }
+        .table-wrapper { overflow-x: auto; border-radius: 20px; background: white; border: 1px solid #d5e2ec; box-shadow: 0 10px 20px -15px rgba(0,0,0,0.15); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 1200px; }
+        th { background: #e9f0f5; color: #1d495a; font-weight: 700; padding: 0.9rem 0.8rem; text-align: left; border-bottom: 2px solid #cbdde8; white-space: nowrap; }
+        td { padding: 0.7rem 0.8rem; border-bottom: 1px solid #eef5fa; color: #1a3b48; font-weight: 500; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f5faff; }
+        tr.unread-row { background: #f0f9ff; }
+        tr.unread-row:hover td { background: #e0f2fe; }
+        .unread-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; margin-right: 0.4rem; box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
+        .courses-cell { display: flex; flex-direction: column; gap: 0.15rem; }
+        .course-tag { font-size: 0.72rem; font-weight: 600; color: #1d495a; }
+        .course-tag .ct-price { color: #0a4b5c; font-weight: 700; }
+        .course-tag .ct-price.consult { color: #7a5b00; }
+        .special-tag { display: inline-block; background: #fff3cd; color: #7a5b00; font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 20px; margin-left: 0.3rem; }
+        .status-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 30px; white-space: nowrap; }
+        .status-badge.awaiting { background: #fef3c7; color: #92400e; }
+        .status-badge.accepted { background: #d1fae5; color: #065f46; }
+        .status-badge.declined { background: #fee2e2; color: #991b1b; }
+        .status-badge.documents { background: #fef3c7; color: #92400e; }
+        .status-badge.consult { background: #ffedd5; color: #c2410c; }
+        .action-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+        .action-btns button { background: none; border: none; cursor: pointer; padding: 0.3rem 0.5rem; border-radius: 8px; transition: 0.1s; font-size: 0.8rem; }
+        .action-btns .view-btn { color: #2b6b7e; }
+        .action-btns .view-btn:hover { background: #d9e7f0; }
+        .action-btns .edit-btn { color: #2b6b7e; }
+        .action-btns .edit-btn:hover { background: #d9e7f0; }
+        .action-btns .delete-btn { color: #b13e3e; }
+        .action-btns .delete-btn:hover { background: #fde7e7; }
+        .tab-bar { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+        .tab-pill { padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: 600; font-size: 0.8rem; cursor: pointer; border: 1.5px solid #cbdde8; background: white; color: #1d495a; transition: 0.15s; display: inline-flex; align-items: center; gap: 0.4rem; }
+        .tab-pill.active { background: #0b3b4b; color: white; border-color: #0b3b4b; }
+        .tab-pill:hover:not(.active) { background: #eef5fa; }
+        .tab-pill .count-bubble { background: rgba(255,255,255,0.3); border-radius: 30px; padding: 0.05rem 0.5rem; font-size: 0.7rem; font-weight: 800; }
+        .tab-pill:not(.active) .count-bubble { background: #ef4444; color: white; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,20,30,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: white; border-radius: 2rem; max-width: 960px; width: 100%; max-height: 92vh; overflow-y: auto; padding: 2rem; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.4); }
+        .modal h3 { font-size: 1.2rem; color: #0f3b4a; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #5b7a8a; padding: 0.2rem 0.5rem; border-radius: 50%; }
+        .modal-close:hover { background: #eef5fa; }
+        .modal .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; }
+        .modal .field { display: flex; flex-direction: column; gap: 0.3rem; }
+        .modal .field label { font-size: 0.78rem; font-weight: 600; color: #1d495a; }
+        .modal .field input, .modal .field select { background: #ffffff; border: 1.5px solid #cbdde8; border-radius: 14px; padding: 0.6rem 0.9rem; font-size: 0.85rem; outline: none; transition: 0.2s; color: #0c2d3b; font-weight: 500; font-family: inherit; width: 100%; }
+        .modal .field input:focus, .modal .field select:focus { border-color: #3d7b8c; box-shadow: 0 0 0 3px rgba(61,123,140,0.15); }
+        .modal .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; gap: 1rem; }
+        .btn { padding: 0.8rem 1.8rem; border-radius: 50px; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; background: white; color: #0b3b4b; border: 1.5px solid #b9cedb; }
+        .btn-primary { background: #0b3b4b; color: white; border: 1.5px solid #0b3b4b; box-shadow: 0 10px 20px -10px #0b3b4ba0; }
+        .btn-primary:hover { background: #124e61; transform: translateY(-2px); }
+        .btn-secondary:hover { background: #e2eff7; border-color: #7fa7bb; }
+        .empty-state { text-align: center; padding: 2.5rem 1rem; color: #5b7a8a; }
+        .empty-state i { font-size: 2.5rem; color: #b9cedb; margin-bottom: 0.8rem; }
+        .empty-state p { font-weight: 500; }
+        .finance-summary { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+        .finance-pill { background: #eef5fa; border: 1px solid #cbdde8; border-radius: 40px; padding: 0.4rem 1rem; font-size: 0.78rem; font-weight: 600; color: #1d495a; display: flex; align-items: center; gap: 0.4rem; }
+        .finance-pill i { color: #3d7b8c; }
+        .finance-pill strong { color: #0a4b5c; }
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: #0b3b4b; color: white; padding: 0.8rem 1.6rem; border-radius: 40px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 15px 30px -10px rgba(0,0,0,0.4); display: none; z-index: 2000; align-items: center; gap: 0.5rem; }
+        .toast.show { display: flex; animation: toastIn 0.3s ease; }
+        @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        .status-select-wrapper { display: flex; flex-direction: column; gap: 0.3rem; }
+        .status-select-wrapper label { font-size: 0.78rem; font-weight: 600; color: #1d495a; }
+        .status-select-wrapper select { background: #fff; border: 1.5px solid #cbdde8; border-radius: 14px; padding: 0.6rem 0.9rem; font-size: 0.85rem; outline: none; font-weight: 600; color: #0c2d3b; font-family: inherit; }
+        .status-select-wrapper select:focus { border-color: #3d7b8c; box-shadow: 0 0 0 3px rgba(61,123,140,0.15); }
+        .doc-viewer { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .doc-card-mini { background: #f8fbfe; border: 1.5px solid #d5e2ec; border-radius: 16px; padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .doc-card-mini h5 { font-size: 0.82rem; color: #0f3b4a; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
+        .doc-card-mini h5 i { color: #3d7b8c; }
+        .doc-card-mini .doc-preview { width: 100%; height: 120px; background: #eef5fa; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #d5e2ec; }
+        .doc-card-mini .doc-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .doc-card-mini .doc-preview i { font-size: 2rem; color: #9bb7c9; }
+        .doc-card-mini .doc-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+        .doc-card-mini .doc-actions a, .doc-card-mini .doc-actions button { font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.8rem; border-radius: 30px; border: 1.5px solid #b9cedb; background: white; color: #0b3b4b; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; }
+        .doc-card-mini .doc-actions a:hover, .doc-card-mini .doc-actions button:hover { background: #e2eff7; }
+        .doc-card-mini .doc-actions .view-doc { background: #0b3b4b; color: white; border-color: #0b3b4b; }
+        .doc-card-mini .doc-actions .view-doc:hover { background: #124e61; }
+        .doc-card-mini .no-doc { font-size: 0.72rem; color: #9bb7c9; font-weight: 600; font-style: italic; }
+        .course-editor-section { margin-top: 1.4rem; background: #f5faff; border: 1.5px solid #cbdde8; border-radius: 22px; padding: 1.2rem; }
+        .course-editor-section h4 { font-size: 0.9rem; color: #0f3b4a; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; }
+        .course-editor-section h4 i { color: #3d7b8c; }
+        .course-rows { display: flex; flex-direction: column; gap: 0.6rem; }
+        .course-row { display: flex; align-items: center; gap: 0.6rem; background: white; border: 1.5px solid #d5e2ec; border-radius: 16px; padding: 0.5rem 0.6rem; flex-wrap: wrap; }
+        .course-row .cr-name { flex: 1 1 260px; min-width: 200px; }
+        .course-row .cr-price { flex: 0 0 130px; width: 130px; }
+        .course-row input[type="text"], .course-row input[type="number"], .course-row select { width: 100%; background: #fff; border: 1.5px solid #cbdde8; border-radius: 12px; padding: 0.5rem 0.7rem; font-size: 0.82rem; outline: none; transition: 0.2s; color: #0c2d3b; font-weight: 500; font-family: inherit; }
+        .course-row input:focus, .course-row select:focus { border-color: #3d7b8c; box-shadow: 0 0 0 3px rgba(61,123,140,0.12); }
+        .course-row .cr-custom-name { flex: 1 1 200px; min-width: 150px; }
+        .course-row .consult-toggle { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: #1d495a; background: #eef5fa; border: 1px solid #cbdde8; border-radius: 30px; padding: 0.3rem 0.7rem; cursor: pointer; user-select: none; }
+        .course-row .consult-toggle input { accent-color: #0b3b4b; cursor: pointer; }
+        .course-row .cr-remove { background: #fde7e7; border: 1.5px solid #e2a5a5; color: #9a2f2f; border-radius: 30px; padding: 0.4rem 0.9rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.15s; display: flex; align-items: center; gap: 0.35rem; }
+        .course-row .cr-remove:hover { background: #f9d5d5; border-color: #d48a8a; }
+        .course-row .cr-price-label { font-size: 0.7rem; font-weight: 700; color: #7a5b00; background: #fff8e1; border: 1px solid #f0c674; border-radius: 30px; padding: 0.3rem 0.7rem; white-space: nowrap; }
+        .add-course-btn { margin-top: 0.8rem; background: #e2eff7; border: 1.5px dashed #7fa7bb; color: #0b3b4b; border-radius: 40px; padding: 0.6rem 1.2rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; gap: 0.4rem; }
+        .add-course-btn:hover { background: #d2e6f2; border-color: #5b8b9c; }
+        .totals-panel { margin-top: 1.2rem; background: #f0f7fc; border: 1.5px solid #b9d3e3; border-radius: 20px; padding: 1rem 1.2rem; }
+        .totals-panel .trow { display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600; color: #0f3b4a; padding: 0.3rem 0; }
+        .totals-panel .trow .tv { font-weight: 800; color: #0a4b5c; }
+        .totals-panel .trow.subtotal { border-bottom: 1px dashed #b9d3e3; padding-bottom: 0.6rem; margin-bottom: 0.3rem; }
+        .totals-panel .trow.grand { border-top: 2px solid #b9d3e3; margin-top: 0.3rem; padding-top: 0.6rem; font-size: 1.05rem; font-weight: 800; }
+        .totals-panel .trow.grand .tv { font-size: 1.35rem; }
+        .totals-panel .trow.deposit-line { color: #1e7e45; }
+        .totals-panel .trow.deposit-line .tv { color: #1e7e45; }
+        .totals-panel .consult-note { font-size: 0.75rem; color: #7a5b00; font-weight: 700; margin-top: 0.4rem; display: none; background: #fff8e1; border: 1px solid #f0c674; border-radius: 14px; padding: 0.5rem 0.8rem; }
+        .totals-panel .consult-note.show { display: block; }
+        @media (max-width: 750px) {
+            .topbar { border-radius: 30px; padding: 0.8rem 1.2rem; }
+            .card { padding: 1.5rem; }
+            .nav-tab { padding: 0.45rem 1rem; font-size: 0.75rem; }
+            .brand h1 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="topbar">
+        <div class="brand">
+            <img src="IVY STONE logo.png" alt="IVY STONE" style="height:2.2rem;" onerror="this.style.display='none'">
+            <h1>IVY STONE <span>ADMIN</span></h1>
+        </div>
+        <div class="nav-tabs">
+            <span class="nav-tab active"><i class="fas fa-cog"></i> Admin Dashboard</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="admin-toolbar">
+            <h2><i class="fas fa-users-cog"></i> Registered students</h2>
+            <div class="search-admin">
+                <i class="fas fa-search"></i>
+                <input type="text" id="adminSearch" placeholder="Search by name, ID, email, course..." oninput="renderAdminTable()">
+            </div>
+        </div>
+
+        <div class="tab-bar" id="tabBar">
+            <button class="tab-pill active" data-tab="all" onclick="setTab('all')"><i class="fas fa-list"></i> All Applications</button>
+            <button class="tab-pill" data-tab="unchecked" onclick="setTab('unchecked')">
+                <i class="fas fa-bell"></i> Unchecked Applications
+                <span class="count-bubble" id="uncheckedCount">0</span>
+            </button>
+        </div>
+
+        <div class="finance-summary" id="financeSummary"></div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th><th>Full name</th><th>ID</th><th>Contact</th><th>Faculty</th><th>Courses</th>
+                        <th>Reg. fee</th><th>Total</th><th>Status</th><th>Submitted</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody"></tbody>
+            </table>
+        </div>
+        <div id="adminEmpty" class="empty-state" style="display: none;"><i class="fas fa-inbox"></i><p id="emptyText">No students registered yet.</p></div>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal">
+        <h3><i class="fas fa-edit"></i> Edit student record <button class="modal-close" onclick="closeEditModal()">&times;</button></h3>
+        <div class="status-select-wrapper" style="margin-bottom:1rem;">
+            <label><i class="fas fa-flag"></i> Application status</label>
+            <select id="editStatus">
+                <option value="awaiting">Waiting Approval (Yellow)</option>
+                <option value="accepted">Accepted (Green)</option>
+                <option value="declined">Declined (Red)</option>
+                <option value="documents">Submit Clear Documents (Yellow)</option>
+                <option value="consult">Consult the Office (Orange)</option>
+            </select>
+        </div>
+        <div class="input-grid" id="editFields"></div>
+        <div class="course-editor-section" style="margin-top:1.2rem;">
+            <h4><i class="fas fa-file-upload"></i> Uploaded documents</h4>
+            <div class="doc-viewer" id="docViewer"></div>
+        </div>
+        <div class="course-editor-section">
+            <h4><i class="fas fa-book-open"></i> Courses &amp; pricing</h4>
+            <div class="course-rows" id="courseRows"></div>
+            <button class="add-course-btn" onclick="addCourseRow()"><i class="fas fa-plus-circle"></i> Add course</button>
+            <div class="totals-panel">
+                <div class="trow subtotal"><span>Courses subtotal</span><span class="tv" id="editSubtotal">R0</span></div>
+                <div class="trow" id="editFeeRow"><span>Registration fee (R)</span>
+                    <span style="display:flex; align-items:center; gap:0.4rem;">
+                        <input type="number" id="editRegFee" min="0" step="1" style="width:110px;background:#fff;border:1.5px solid #cbdde8;border-radius:12px;padding:0.4rem 0.6rem;font-size:0.85rem;font-weight:700;color:#0a4b5c;font-family:inherit;text-align:right;">
+                    </span>
+                </div>
+                <div class="trow grand"><span>Total payable</span><span class="tv" id="editTotal">R0</span></div>
+                <div class="consult-note" id="editConsultNote"><i class="fas fa-handshake"></i> One or more courses are "Consult the center" — their price is not included in the total and may change.</div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveEdit()"><i class="fas fa-save"></i> Save changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="modal-overlay" id="viewModal">
+    <div class="modal">
+        <h3><i class="fas fa-user-graduate"></i> Student profile <button class="modal-close" onclick="closeViewModal()">&times;</button></h3>
+        <div id="viewContent"></div>
+        <div class="form-actions">
+            <span></span>
+            <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastText"></span></div>
+
+<!-- ================= SUPABASE + APP SCRIPT ================= -->
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabaseUrl = 'https://yqdbqtownrahbvbxdoyx.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZGJxdG93bnJhaGJ2Ynhkb3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3OTA5ODgsImV4cCI6MjExMDM2Njk4OH0.lFw4nw26R-Xyls63YZdc2qxCvvrMKp3RDFZ0JrjnRP8';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // -------- Constants --------
+    const PROFESSIONAL_COURSES = [
+        { id: 'facilitator', name: 'Facilitator', price: 3500 },
+        { id: 'assessor',    name: 'Assessor',    price: 3500 },
+        { id: 'moderator',   name: 'Moderator',   price: 3500 }
+    ];
+    const SPECIAL_BUNDLE = { id: 'special', name: 'Special: Facilitator + Assessor + Moderator', price: 3500 };
+    
+    const SKILLS_COURSES = [
+        { id: 'matric',    name: 'Matric (NQF Level 4)',      price: 10200 },
+        { id: 'computer',  name: 'Basic Computer Skills',     price: 5500 },
+        { id: 'firstaid',  name: 'First Aid (NQF Level 2-4)', price: 7500 },
+        { id: 'entre',     name: 'Entrepreneurship (NQF Level 4)', price: 12500 },
+        { id: 'code8',     name: 'Code 8 Driver Licence',     price: 6000 },
+        { id: 'makeup',    name: 'Make up',                   price: 3000 },
+        { id: 'nail',      name: 'Nail Tech',                 price: 3000 }
+    ];
+    const SKILLS_SPECIAL_BUNDLE = { id: 'skills_special', name: 'Special Bundle (Skills)', price: null };
+
+    const PRESET_COURSES = [
+        ...PROFESSIONAL_COURSES.map(c => ({ ...c, faculty: 'Professional Training' })),
+        { ...SPECIAL_BUNDLE, faculty: 'Professional Training' },
+        ...SKILLS_COURSES.map(c => ({ ...c, faculty: 'Skills Programmes' })),
+        { ...SKILLS_SPECIAL_BUNDLE, faculty: 'Skills Programmes' }
+    ];
+    function findPresetByName(name) {
+        return PRESET_COURSES.find(p => p.name.toLowerCase() === String(name || '').toLowerCase());
+    }
+
+    // -------- State --------
+    let students = [];
+    let editingStudentId = null;
+    let viewingStudentId = null;
+    let draftCourses = [];
+    let draftRegFee = 0;
+    let currentTab = 'all';
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toastText').textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2600);
+    }
+    function fmtR(n) {
+        if (n === null || n === undefined || n === '') return '—';
+        return 'R' + Number(n).toLocaleString();
+    }
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]);
+    }
+    function isConsultPrice(p) { return p === null || p === undefined || p === '' || isNaN(Number(p)); }
+
+    const STATUS_OPTIONS = {
+        awaiting: { label: 'Waiting Approval', cls: 'awaiting' },
+        accepted: { label: 'Accepted', cls: 'accepted' },
+        declined: { label: 'Declined', cls: 'declined' },
+        documents: { label: 'Submit Clear Documents', cls: 'documents' },
+        consult: { label: 'Consult the Office', cls: 'consult' }
+    };
+    function statusLabel(s) { return (STATUS_OPTIONS[s] || STATUS_OPTIONS.awaiting).label; }
+    function statusClass(s) { return (STATUS_OPTIONS[s] || STATUS_OPTIONS.awaiting).cls; }
+
+    function computeTotal(subtotal, regFee, faculty) {
+        if (faculty === 'Professional Training' && regFee > 0 && subtotal > 0) {
+            let t = subtotal - regFee; return t < 0 ? 0 : t;
+        }
+        return subtotal + regFee;
+    }
+
+    function renderCoursesCell(s) {
+        if (!s.courses || !s.courses.length) return '<span style="color:#8aa3b3;">None</span>';
+        return '<div class="courses-cell">' + s.courses.map(c => {
+            const price = isConsultPrice(c.price) ? '<span class="ct-price consult">Consult</span>' : '<span class="ct-price">' + fmtR(c.price) + '</span>';
+            const special = (c.name || '').toLowerCase().includes('special') ? '<span class="special-tag">SPECIAL</span>' : '';
+            return '<span class="course-tag">• ' + escapeHtml(c.name || '') + ' — ' + price + special + '</span>';
+        }).join('') + '</div>';
+    }
+
+    function renderFinanceSummary(filteredList) {
+        const list = filteredList || students;
+        const totalStudents = list.length;
+        const totalRevenue = list.reduce((sum, s) => sum + Number(s.total || 0), 0);
+        const totalRegFees = list.reduce((sum, s) => sum + Number(s.registration_fee || 0), 0);
+        const consultCount = list.filter(s => s.has_consult).length;
+        const el = document.getElementById('financeSummary');
+        if (totalStudents === 0) { el.innerHTML = ''; return; }
+        el.innerHTML = `
+            <div class="finance-pill"><i class="fas fa-users"></i> Students: <strong>${totalStudents}</strong></div>
+            <div class="finance-pill"><i class="fas fa-money-bill-wave"></i> Total payable: <strong>${fmtR(totalRevenue)}</strong></div>
+            <div class="finance-pill"><i class="fas fa-receipt"></i> Registration fees: <strong>${fmtR(totalRegFees)}</strong></div>
+            ${consultCount > 0 ? `<div class="finance-pill" style="background:#fff8e1;border-color:#f0c674;color:#7a5b00;"><i class="fas fa-handshake"></i> Consult: <strong>${consultCount}</strong></div>` : ''}
+        `;
+    }
+
+    window.setTab = function(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-pill').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+        renderAdminTable();
+    };
+
+    function updateUncheckedCount() {
+        const unread = students.filter(s => s.has_new_submission).length;
+        const badge = document.getElementById('uncheckedCount');
+        if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? 'inline-block' : 'none'; }
+    }
+
+    window.renderAdminTable = function() {
+        const tbody = document.getElementById('adminTableBody');
+        const emptyDiv = document.getElementById('adminEmpty');
+        const emptyText = document.getElementById('emptyText');
+        const searchTerm = document.getElementById('adminSearch').value.trim().toLowerCase();
+        let filtered = students.slice();
+        if (currentTab === 'unchecked') filtered = filtered.filter(s => s.has_new_submission);
+        filtered = filtered.filter(s => {
+            const courseNames = (s.courses || []).map(c => c.name).join(' ');
+            const full = `${s.first_name} ${s.surname} ${s.id_number} ${s.email} ${s.phone} ${s.faculty} ${courseNames}`.toLowerCase();
+            return full.includes(searchTerm);
+        });
+        renderFinanceSummary(filtered);
+        updateUncheckedCount();
+        if (filtered.length === 0) {
+            tbody.innerHTML = '';
+            emptyDiv.style.display = 'block';
+            emptyText.textContent = currentTab === 'unchecked' ? 'No unchecked applications.' : 'No students registered yet.';
+            return;
+        }
+        emptyDiv.style.display = 'none';
+        tbody.innerHTML = filtered.map((s, idx) => {
+            const isUnread = !!s.has_new_submission;
+            const st = s.status || 'awaiting';
+            const submitted = s.submitted_at ? new Date(s.submitted_at).toLocaleString() : '—';
+            return `<tr class="${isUnread ? 'unread-row' : ''}">
+                <td>${isUnread ? '<span class="unread-dot"></span>' : ''}${idx + 1}</td>
+                <td><strong>${escapeHtml(s.first_name)} ${escapeHtml(s.surname)}</strong><br><span style="font-size:0.7rem;color:#5b8b9c;">${escapeHtml(s.email || '')}</span></td>
+                <td>${escapeHtml(s.id_number || '')}</td>
+                <td>${escapeHtml(s.phone || '')}${s.alt_phone ? '<br><span style="font-size:0.7rem;color:#5b8b9c;">' + escapeHtml(s.alt_phone) + '</span>' : ''}</td>
+                <td>${escapeHtml(s.faculty || '—')}</td>
+                <td>${renderCoursesCell(s)}</td>
+                <td>${fmtR(s.registration_fee)}</td>
+                <td><strong style="color:#0a4b5c;">${fmtR(s.total)}</strong>${s.has_consult ? '<br><span style="font-size:0.68rem;color:#7a5b00;font-weight:700;">Consult note</span>' : ''}</td>
+                <td><span class="status-badge ${statusClass(st)}">${statusLabel(st)}</span></td>
+                <td style="font-size:0.72rem;color:#5b8b9c;">${submitted}</td>
+                <td><div class="action-btns">
+                    <button class="view-btn" onclick="openViewModal('${s.id}')" title="View"><i class="fas fa-eye"></i></button>
+                    <button class="edit-btn" onclick="openEditModal('${s.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="delete-btn" onclick="deleteStudent('${s.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                </div></td>
+            </tr>`;
+        }).join('');
+    };
+
+    function renderDocViewer(s, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const docs = [
+            { key: 'id', label: 'Certified ID', icon: 'fa-id-card' },
+            { key: 'matric', label: 'School results', icon: 'fa-file-alt' },
+            { key: 'residence', label: 'Proof of Residence', icon: 'fa-house-chimney' },
+            { key: 'cv', label: 'CV', icon: 'fa-file-pdf' },
+            { key: 'permit', label: 'Student Permit', icon: 'fa-passport' }
+        ];
+        container.innerHTML = docs.map(d => {
+            const docUrl = s.documents && s.documents[d.key];
+            if (!docUrl) {
+                return `<div class="doc-card-mini"><h5><i class="fas ${d.icon}"></i> ${d.label}</h5><div class="doc-preview"><i class="fas fa-file-slash"></i></div><div class="no-doc">Not uploaded</div></div>`;
+            }
+            return `<div class="doc-card-mini">
+                <h5><i class="fas ${d.icon}"></i> ${d.label}</h5>
+                <div class="doc-preview"><i class="fas fa-file"></i></div>
+                <div class="doc-actions">
+                    <a href="${docUrl}" target="_blank" class="view-doc"><i class="fas fa-eye"></i> View</a>
+                    <a href="${docUrl}" download target="_blank"><i class="fas fa-download"></i> Download</a>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // -------- View modal --------
+    window.openViewModal = async function(id) {
+        const s = students.find(x => x.id === id);
+        if (!s) return;
+        viewingStudentId = id;
+        if (s.has_new_submission) {
+            await supabase.from('students').update({ has_new_submission: false }).eq('id', id);
+            await fetchStudents();
+        }
+        const docs = [];
+        if (s.documents && s.documents.id) docs.push('ID');
+        if (s.documents && s.documents.matric) docs.push('School results');
+        if (s.documents && s.documents.residence) docs.push('Residence');
+        if (s.documents && s.documents.cv) docs.push('CV');
+        if (s.documents && s.documents.permit) docs.push('Permit');
+        const docStr = docs.length ? docs.join(', ') : 'None uploaded';
+
+        let coursesHtml = '';
+        if (s.courses && s.courses.length) {
+            coursesHtml = s.courses.map(c => {
+                const priceStr = isConsultPrice(c.price) ? '<span style="color:#7a5b00;font-weight:700;">Consult the center</span>' : `<strong style="color:#0a4b5c;">${fmtR(c.price)}</strong>`;
+                const noteStr = c.note ? `<span style="font-size:0.72rem;color:#5b8b9c;"> — ${escapeHtml(c.note)}</span>` : '';
+                return `<div class="profile-row"><span class="label">${escapeHtml(c.name || '')}</span><span class="value">${priceStr}${noteStr}</span></div>`;
+            }).join('');
+        } else { coursesHtml = '<div class="profile-row"><span class="label">Courses</span><span class="value">None</span></div>'; }
+
+        const st = s.status || 'awaiting';
+        const isProf = s.faculty === 'Professional Training';
+        const consultNote = s.has_consult ? `<div class="profile-row"><span class="label">Note</span><span class="value" style="color:#7a5b00;font-weight:700;">One or more courses — consult the center.</span></div>` : '';
+        const subStr = fmtR(s.subtotal), regStr = fmtR(s.registration_fee), totalStr = fmtR(s.total);
+        const submittedStr = s.submitted_at ? new Date(s.submitted_at).toLocaleString() : '—';
+
+        document.getElementById('viewContent').innerHTML = `
+            <div style="margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                <div><strong>Status:</strong> <span class="status-badge ${statusClass(st)}">${statusLabel(st)}</span></div>
+                <div style="font-size:0.78rem; color:#5b8b9c;">Submitted: ${submittedStr}</div>
+            </div>
+            <div class="profile-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;">
+                <div class="profile-card" style="background:#f8fbfe;border:1px solid #d5e2ec;border-radius:18px;padding:1.2rem;">
+                    <h4 style="font-size:0.85rem;color:#0f3b4a;border-bottom:2px solid #e2eff7;padding-bottom:0.4rem;margin-bottom:0.6rem;"><i class="fas fa-user"></i> Personal</h4>
+                    <div class="profile-row"><span class="label">Name : </span><span class="value">${escapeHtml(s.first_name)} ${escapeHtml(s.surname)}</span></div>
+                    <div class="profile-row"><span class="label">ID : </span><span class="value">${escapeHtml(s.id_number || '')}</span></div>
+                    <div class="profile-row"><span class="label">DOB : </span><span class="value">${escapeHtml(s.dob || '—')}</span></div>
+                    <div class="profile-row"><span class="label">Gender : </span><span class="value">${escapeHtml(s.gender || '—')}</span></div>
+                    <div class="profile-row"><span class="label">Race : </span><span class="value">${escapeHtml(s.race || '—')}</span></div>
+                    <div class="profile-row"><span class="label">Nationality : </span><span class="value">${escapeHtml(s.nationality || '—')}</span></div>
+                    <div class="profile-row"><span class="label">Phone : </span><span class="value">${escapeHtml(s.phone || '')}</span></div>
+                    <div class="profile-row"><span class="label">Email : </span><span class="value">${escapeHtml(s.email || '')}</span></div>
+                    <div class="profile-row"><span class="label">Address : </span><span class="value">${escapeHtml(s.home_address || '')}</span></div>
+                </div>
+                <div class="profile-card" style="background:#f8fbfe;border:1px solid #d5e2ec;border-radius:18px;padding:1.2rem;">
+                    <h4 style="font-size:0.85rem;color:#0f3b4a;border-bottom:2px solid #e2eff7;padding-bottom:0.4rem;margin-bottom:0.6rem;"><i class="fas fa-graduation-cap"></i> Academic</h4>
+                    <div class="profile-row"><span class="label">Faculty : </span><span class="value">${escapeHtml(s.faculty || '')}</span></div>
+                    ${coursesHtml}
+                    <div class="profile-row"><span class="label">Subtotal : </span><span class="value">${subStr}</span></div>
+                    ${isProf ? `<div class="profile-row"><span class="label" style="color:#1e7e45;">Deposit : </span><span class="value" style="color:#1e7e45;">−${regStr}</span></div>` : `<div class="profile-row"><span class="label">Reg fee : </span><span class="value">${regStr}</span></div>`}
+                    <div class="profile-row"><span class="label">Total : </span><span class="value" style="font-weight:800;color:#0a4b5c;">${totalStr}</span></div>
+                    ${consultNote}
+                </div>
+            </div>
+            <div style="margin-top:1.2rem;"><h4 style="font-size:0.9rem;color:#0f3b4a;font-weight:700;margin-bottom:0.6rem;"><i class="fas fa-paperclip"></i> Documents</h4><div class="doc-viewer" id="viewDocViewer"></div></div>`;
+        renderDocViewer(s, 'viewDocViewer');
+        document.getElementById('viewModal').classList.add('open');
+    };
+
+    window.closeViewModal = function() {
+        document.getElementById('viewModal').classList.remove('open');
+        viewingStudentId = null;
+    };
+
+    // -------- Course editor --------
+    function buildCourseOptions(selectedName) {
+        let html = '<option value="">— Select a course —</option><optgroup label="Professional Training">';
+        PROFESSIONAL_COURSES.forEach(c => { html += `<option value="${escapeHtml(c.name)}" ${selectedName === c.name ? 'selected' : ''}>${escapeHtml(c.name)}</option>`; });
+        html += `<option value="${escapeHtml(SPECIAL_BUNDLE.name)}" ${selectedName === SPECIAL_BUNDLE.name ? 'selected' : ''}>${escapeHtml(SPECIAL_BUNDLE.name)} (Special)</option></optgroup><optgroup label="Skills Programmes">`;
+        SKILLS_COURSES.forEach(c => { html += `<option value="${escapeHtml(c.name)}" ${selectedName === c.name ? 'selected' : ''}>${escapeHtml(c.name)}</option>`; });
+        html += `<option value="${escapeHtml(SKILLS_SPECIAL_BUNDLE.name)}" ${selectedName === SKILLS_SPECIAL_BUNDLE.name ? 'selected' : ''}>${escapeHtml(SKILLS_SPECIAL_BUNDLE.name)} (Consult)</option>`;
+        html += '</optgroup>';
+        const isPreset = selectedName && PRESET_COURSES.some(p => p.name.toLowerCase() === String(selectedName).toLowerCase());
+        if (selectedName && !isPreset) html += `<option value="__custom__" selected>Custom: ${escapeHtml(selectedName)}</option>`;
+        html += '<option value="__custom__">+ Add custom course…</option>';
+        return html;
+    }
+
+    function renderCourseRows() {
+        const container = document.getElementById('courseRows');
+        if (!draftCourses.length) {
+            container.innerHTML = '<div style="font-size:0.82rem;color:#537f91;font-weight:600;padding:0.5rem 0;"><i class="fas fa-info-circle"></i> No courses. Click "Add course" to add one.</div>';
+        } else {
+            container.innerHTML = draftCourses.map((c, idx) => {
+                const consult = isConsultPrice(c.price);
+                const preset = findPresetByName(c.name);
+                const isCustom = c.name && !preset;
+                return `<div class="course-row" data-idx="${idx}">
+                    <div class="cr-name"><select onchange="onCourseSelect(${idx}, this.value)">${buildCourseOptions(c.name)}</select></div>
+                    ${isCustom ? `<div class="cr-custom-name"><input type="text" placeholder="Custom course name" value="${escapeHtml(c.name || '')}" oninput="updateCourseName(${idx}, this.value)"></div>` : ''}
+                    ${consult ? '<span class="cr-price-label"><i class="fas fa-handshake"></i> Consult the center</span>' : `<div class="cr-price"><input type="number" min="0" step="1" placeholder="Price (R)" value="${c.price}" oninput="updateCoursePrice(${idx}, this.value)"></div>`}
+                    <label class="consult-toggle"><input type="checkbox" ${consult ? 'checked' : ''} onchange="toggleConsult(${idx}, this.checked)"> Consult</label>
+                    <button class="cr-remove" onclick="removeCourseRow(${idx})"><i class="fas fa-trash-alt"></i> Remove</button>
+                </div>`;
+            }).join('');
+        }
+        recalcDraft();
+    }
+
+    window.onCourseSelect = function(idx, value) {
+        if (!draftCourses[idx]) return;
+        if (value === '__custom__') {
+            if (findPresetByName(draftCourses[idx].name)) draftCourses[idx].name = '';
+            renderCourseRows();
+            setTimeout(() => { const rows = document.querySelectorAll('#courseRows .course-row'); if (rows[idx]) { const inp = rows[idx].querySelector('.cr-custom-name input'); if (inp) inp.focus(); } }, 30);
+            return;
+        }
+        if (!value) return;
+        draftCourses[idx].name = value;
+        const preset = findPresetByName(value);
+        if (preset) {
+            if (isConsultPrice(preset.price)) { draftCourses[idx].price = null; draftCourses[idx].note = 'Consult the center — price may change'; }
+            else { draftCourses[idx].price = Number(preset.price); draftCourses[idx].note = ''; }
+        }
+        renderCourseRows();
+    };
+    window.updateCourseName = function(idx, val) { if (draftCourses[idx]) draftCourses[idx].name = val; };
+    window.updateCoursePrice = function(idx, val) { if (!draftCourses[idx]) return; const num = Number(val); draftCourses[idx].price = isNaN(num) ? 0 : num; recalcDraft(); };
+    window.toggleConsult = function(idx, checked) {
+        if (!draftCourses[idx]) return;
+        if (checked) { draftCourses[idx].price = null; draftCourses[idx].note = 'Consult the center — price may change'; }
+        else { if (isConsultPrice(draftCourses[idx].price)) draftCourses[idx].price = 0; draftCourses[idx].note = ''; }
+        renderCourseRows();
+    };
+    window.removeCourseRow = function(idx) { if (!draftCourses[idx]) return; draftCourses.splice(idx, 1); renderCourseRows(); };
+    window.addCourseRow = function() { draftCourses.push({ name: '', price: 0, note: '' }); renderCourseRows(); };
+
+    function recalcDraft() {
+        const subtotal = draftCourses.reduce((sum, c) => isConsultPrice(c.price) ? sum : sum + Number(c.price || 0), 0);
+        const hasConsult = draftCourses.some(c => isConsultPrice(c.price));
+        const regFee = Number(draftRegFee) || 0;
+        const facultySelect = document.querySelector('#editFields select[data-key="faculty"]');
+        const faculty = facultySelect ? facultySelect.value : '';
+        const total = computeTotal(subtotal, regFee, faculty);
+        document.getElementById('editSubtotal').textContent = 'R' + subtotal.toLocaleString();
+        document.getElementById('editTotal').textContent = 'R' + total.toLocaleString();
+        let depLine = document.getElementById('editDepositLine');
+        const feeRow = document.getElementById('editFeeRow');
+        if (faculty === 'Professional Training' && regFee > 0 && subtotal > 0) {
+            if (!depLine) {
+                depLine = document.createElement('div'); depLine.id = 'editDepositLine'; depLine.className = 'trow deposit-line';
+                const subRow = document.querySelector('.totals-panel .trow.subtotal');
+                if (subRow && subRow.parentNode) subRow.parentNode.insertBefore(depLine, subRow.nextSibling);
+            }
+            depLine.innerHTML = `<span><i class="fas fa-check-circle"></i> Deposit subtracted (once)</span><span class="tv">−R${regFee.toLocaleString()}</span>`;
+            if (feeRow) feeRow.style.display = 'none';
+        } else {
+            if (depLine) depLine.remove();
+            if (feeRow) feeRow.style.display = 'flex';
+        }
+        const note = document.getElementById('editConsultNote');
+        if (hasConsult) note.classList.add('show'); else note.classList.remove('show');
+    }
+
+    document.getElementById('editRegFee').addEventListener('input', function() { draftRegFee = Number(this.value) || 0; recalcDraft(); });
+
+    const FACULTY_OPTIONS = ['Professional Training', 'Skills Programmes'];
+
+    window.openEditModal = async function(id) {
+        const student = students.find(s => s.id === id);
+        if (!student) return;
+        editingStudentId = id; viewingStudentId = id;
+        if (student.has_new_submission) {
+            await supabase.from('students').update({ has_new_submission: false }).eq('id', id);
+            await fetchStudents();
+        }
+        document.getElementById('editStatus').value = student.status || 'awaiting';
+        const fields = [
+            { label: 'First name', key: 'first_name', type: 'text' }, { label: 'Surname', key: 'surname', type: 'text' },
+            { label: 'ID number', key: 'id_number', type: 'text' }, { label: 'Date of birth', key: 'dob', type: 'date' },
+            { label: 'Gender', key: 'gender', type: 'text' }, { label: 'Race', key: 'race', type: 'text' },
+            { label: 'Nationality', key: 'nationality', type: 'text' }, { label: 'Home language', key: 'home_language', type: 'text' },
+            { label: 'Phone', key: 'phone', type: 'text' }, { label: 'Alt phone', key: 'alt_phone', type: 'text' },
+            { label: 'Email', key: 'email', type: 'email' }, { label: 'Home address', key: 'home_address', type: 'text' },
+            { label: 'Next of kin', key: 'next_of_kin', type: 'text' }, { label: 'Next of kin phone', key: 'next_of_kin_phone', type: 'text' },
+            { label: 'Guardian name', key: 'guardian_name', type: 'text' }, { label: 'Guardian surname', key: 'guardian_surname', type: 'text' },
+            { label: 'Guardian ID', key: 'guardian_id', type: 'text' }, { label: 'Relationship', key: 'relationship', type: 'text' },
+            { label: 'Guardian address', key: 'guardian_address', type: 'text' }, { label: 'Year of study', key: 'year_of_study', type: 'text' },
+            { label: 'Matric number', key: 'matric_number', type: 'text' }, { label: 'Previous institution', key: 'previous_institution', type: 'text' },
+            { label: 'Prev. student number', key: 'previous_student_number', type: 'text' },
+        ];
+        const container = document.getElementById('editFields');
+        const yearIndex = fields.findIndex(f => f.key === 'year_of_study');
+        const facultyValue = student.faculty || '';
+        const facultyHtml = `<div class="field"><label>Faculty</label><select data-key="faculty"><option value="">Select faculty</option>${FACULTY_OPTIONS.map(opt => `<option value="${escapeHtml(opt)}" ${facultyValue === opt ? 'selected' : ''}>${escapeHtml(opt)}</option>`).join('')}</select></div>`;
+        container.innerHTML = fields.map((f, i) => {
+            let val = student[f.key] !== undefined ? student[f.key] : '';
+            if (f.type === 'date' && val) val = val.split('T')[0];
+            const inputHtml = `<div class="field"><label>${f.label}</label><input type="${f.type}" data-key="${f.key}" value="${escapeHtml(val)}"></div>`;
+            if (i === yearIndex) return inputHtml + facultyHtml;
+            return inputHtml;
+        }).join('');
+        const facSel = document.querySelector('#editFields select[data-key="faculty"]');
+        if (facSel) facSel.addEventListener('change', recalcDraft);
+        renderDocViewer(student, 'docViewer');
+        draftCourses = (student.courses || []).map(c => ({ name: c.name || '', price: isConsultPrice(c.price) ? null : Number(c.price), note: c.note || '' }));
+        draftRegFee = Number(student.registration_fee || 0);
+        document.getElementById('editRegFee').value = draftRegFee;
+        renderCourseRows();
+        document.getElementById('editModal').classList.add('open');
+    };
+
+    window.closeEditModal = function() {
+        document.getElementById('editModal').classList.remove('open');
+        editingStudentId = null; draftCourses = []; draftRegFee = 0;
+        const depLine = document.getElementById('editDepositLine'); if (depLine) depLine.remove();
+    };
+
+    // -------- Save Edit & Send Email --------
+    window.saveEdit = async function() {
+        if (!editingStudentId) return;
+        const student = students.find(s => s.id === editingStudentId);
+        if (!student) return;
+        
+        const inputs = document.querySelectorAll('#editFields input');
+        const updates = {};
+        inputs.forEach(inp => { updates[inp.dataset.key] = inp.value; });
+        
+        const facultySelect = document.querySelector('#editFields select[data-key="faculty"]');
+        if (facultySelect) updates.faculty = facultySelect.value;
+        
+        const oldStatus = student.status || 'awaiting';
+        const newStatus = document.getElementById('editStatus').value;
+        updates.status = newStatus;
+        
+        const cleanCourses = draftCourses.filter(c => (c.name || '').trim() !== '').map(c => isConsultPrice(c.price)
+            ? { name: c.name.trim(), price: null, note: 'Consult the center — price may change' }
+            : { name: c.name.trim(), price: Number(c.price || 0), note: c.note || '' });
+            
+        updates.courses = cleanCourses;
+        updates.has_consult = cleanCourses.some(c => isConsultPrice(c.price));
+        
+        const regFee = Number(document.getElementById('editRegFee').value) || 0;
+        const subtotal = cleanCourses.reduce((sum, c) => isConsultPrice(c.price) ? sum : sum + Number(c.price || 0), 0);
+        
+        updates.registration_fee = regFee;
+        updates.subtotal = subtotal;
+        updates.total = computeTotal(subtotal, regFee, updates.faculty);
+        updates.has_new_submission = false;
+        updates.status_updated_at = new Date().toISOString();
+
+        try {
+            const { error } = await supabase
+                .from('students')
+                .update(updates)
+                .eq('id', editingStudentId);
+                
+            if (error) throw error;
+
+            // Trigger Email if status changed
+            if (oldStatus !== newStatus) {
+                const targetEmail = updates.email || student.email;
+                
+                if (targetEmail) {
+                    const { error: functionError } = await supabase.functions.invoke('send-email', {
+                        body: {
+                            email: targetEmail,
+                            name: updates.first_name || student.first_name,
+                            status: newStatus,
+                            course: updates.faculty || student.faculty
+                        }
+                    });
+
+                    if (functionError) {
+                        console.error("Email failed to send:", functionError);
+                        showToast('Saved, but email failed to send. Check console.');
+                    } else {
+                        showToast('Student record updated & email sent!');
+                    }
+                }
+            } else {
+                showToast('Student record updated');
+            }
+            
+            await fetchStudents();
+            closeEditModal();
+            
+        } catch (e) { 
+            showToast('Save failed: ' + e.message); 
+        }
+    };
+
+    window.deleteStudent = async function(id) {
+        if (!confirm('Delete this student record permanently?')) return;
+        try {
+            const { error } = await supabase.from('students').delete().eq('id', id);
+            if (error) throw error;
+            await fetchStudents();
+            showToast('Student record deleted');
+        } catch (e) { showToast('Delete failed: ' + e.message); }
+    };
+
+    async function fetchStudents() {
+        try {
+            const { data, error } = await supabase
+                .from('students')
+                .select('*')
+                .order('submitted_at', { ascending: false });
+                
+            if (error) throw error;
+            students = data;
+            renderAdminTable();
+        } catch (e) {
+            console.error('Fetch error:', e);
+            document.getElementById('adminTableBody').innerHTML = `<tr><td colspan="11" style="text-align:center;color:red;">Error loading data: ${e.message}</td></tr>`;
+        }
+    }
+
+    // Bootstrap
+    fetchStudents();
+    window.addEventListener('focus', fetchStudents);
+</script>
+</body>
+</html>

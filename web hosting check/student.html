@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVY STONE TRAINING CENTRE · Student Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background: linear-gradient(145deg, #e9f0f5 0%, #d1dee9 100%); min-height: 100vh; padding: 1.5rem 1rem; display: flex; justify-content: center; }
+        .app-container { max-width: 1300px; width: 100%; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 80px; padding: 0.6rem 1.8rem; margin-bottom: 1.8rem; box-shadow: 0 10px 25px -10px rgba(0,30,50,0.2); border: 1px solid rgba(255,255,255,0.8); flex-wrap: wrap; gap: 0.8rem; }
+        .brand { display: flex; align-items: center; gap: 0.6rem; }
+        .brand i { font-size: 2rem; color: #0b3b4b; background: #d9e7f0; padding: 0.45rem; border-radius: 1.2rem; }
+        .brand h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; color: #0a2e3c; }
+        .brand span { font-size: 0.7rem; font-weight: 600; background: #e4eef5; padding: 0.2rem 0.9rem; border-radius: 40px; margin-left: 0.4rem; color: #1d5a6e; }
+        .nav-tabs { display: flex; gap: 0.5rem; background: #ffffffc0; padding: 0.3rem; border-radius: 50px; border: 1px solid #b9d3e3; }
+        .nav-tab { padding: 0.55rem 1.4rem; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.2s; color: #1d495a; background: transparent; border: none; display: flex; align-items: center; gap: 0.4rem; }
+        .nav-tab.active { background: #0b3b4b; color: white; box-shadow: 0 8px 16px -8px #0b3b4b80; }
+        .nav-tab i { font-size: 0.9rem; }
+        .page-section { display: none; animation: fade 0.3s ease; }
+        .page-section.active-section { display: block; }
+        @keyframes fade { from { opacity:0.3; transform: translateY(5px); } to { opacity:1; transform: translateY(0); } }
+        .card { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-radius: 2rem; box-shadow: 0 25px 45px -18px rgba(0,25,40,0.3), 0 0 0 1px rgba(255,255,255,0.6) inset; padding: 2rem 2.2rem; border: 1px solid rgba(255,255,255,0.7); margin-bottom: 1.5rem; }
+        .steps { display: flex; justify-content: space-between; margin: 0.5rem 0 2rem 0; position: relative; max-width: 700px; }
+        .steps::before { content:''; position:absolute; top:18px; left:40px; right:40px; height:3px; background:#b9cedb; z-index:0; border-radius:10px; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; z-index: 1; }
+        .step-icon { width: 40px; height: 40px; background: #ffffff; border: 3px solid #b9cedb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #2e5b6e; transition: 0.2s; }
+        .step.active .step-icon { background: #0b3b4b; border-color: #0b3b4b; color: white; transform: scale(1.05); }
+        .step.completed .step-icon { background: #3d7b8c; border-color: #3d7b8c; color: white; }
+        .step-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #2b5668; background: #e9f0f5; padding: 0.15rem 0.7rem; border-radius: 30px; }
+        .step.active .step-label { background: #0b3b4b; color: white; }
+        .form-step { display: none; }
+        .form-step.active-form { display: block; }
+        .form-step h2 { font-size: 1.4rem; font-weight: 600; color: #0f3b4a; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; }
+        .form-step h2 i { font-size: 1.3rem; color: #3d7b8c; background: #d9e7f0; padding: 0.4rem; border-radius: 12px; }
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem 1.4rem; margin-bottom: 1.5rem; }
+        .field { display: flex; flex-direction: column; gap: 0.3rem; }
+        .field label { font-size: 0.8rem; font-weight: 600; color: #1d495a; display: flex; align-items: center; gap: 4px; }
+        .field label i { font-size: 0.7rem; color: #5b8b9c; width: 14px; }
+        .field input, .field select { background: #ffffff; border: 1.5px solid #cbdde8; border-radius: 14px; padding: 0.8rem 1rem; font-size: 0.9rem; outline: none; transition: 0.2s; color: #0c2d3b; font-weight: 500; }
+        .field input:focus, .field select:focus { border-color: #3d7b8c; box-shadow: 0 0 0 3px rgba(61,123,140,0.15); }
+        .field input:disabled { background: #f2f7fa; border-color: #d5e2ec; color: #5b7a8a; }
+        .checkbox-field { display: flex; align-items: center; gap: 0.7rem; margin: 0.5rem 0 1rem 0; padding: 0.5rem 1rem; background: #e8f1f7; border-radius: 40px; width: fit-content; cursor: pointer; }
+        .checkbox-field input { width: 16px; height: 16px; accent-color: #0b3b4b; cursor: pointer; }
+        .checkbox-field label { font-weight: 600; color: #155163; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; }
+        .course-search-wrapper { position: relative; margin: 0.8rem 0 0.5rem 0; }
+        .course-search-wrapper i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #3d7b8c; font-size: 0.9rem; }
+        .course-search-wrapper input { width: 100%; padding: 0.9rem 0.9rem 0.9rem 2.8rem; border-radius: 50px; border: 1.8px solid #cbdde8; background: white; font-size: 0.9rem; transition: 0.2s; }
+        .course-list { max-height: 340px; overflow-y: auto; background: #ffffffd9; border-radius: 20px; margin-top: 0.5rem; border: 1px solid #cbdde8; padding: 0.4rem; }
+        .course-item { padding: 0.9rem 1rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.1s; font-weight: 500; color: #184858; border-bottom: 1px solid #e1ecf3; font-size: 0.9rem; gap: 0.8rem; }
+        .course-item:last-child { border-bottom: none; }
+        .course-item:hover { background: #e2eff7; }
+        .course-item.selected { background: #0b3b4b; color: white; }
+        .course-item.selected .course-price { color: #d5f0ff; }
+        .course-item.selected .course-meta { color: #c9e4f0; }
+        .course-item.disabled { opacity: 0.45; pointer-events: none; filter: grayscale(0.4); }
+        .course-item .check-mark { font-size: 0.9rem; margin-right: 0.2rem; }
+        .course-info { display: flex; flex-direction: column; gap: 0.15rem; }
+        .course-meta { font-size: 0.72rem; color: #5b8b9c; font-weight: 500; }
+        .course-price { font-weight: 700; color: #0b3b4b; background: #e4eef5; padding: 0.25rem 0.9rem; border-radius: 40px; font-size: 0.8rem; white-space: nowrap; }
+        .course-price.consult { background: #f0e6d9; color: #7a5b00; }
+        .selected-course-display { margin: 1rem 0 0.3rem 0; background: #f0f7fc; border-radius: 22px; padding: 1rem 1.4rem; border: 1.5px solid #b9d3e3; color: #0f3b4a; font-size: 0.95rem; }
+        .selected-list { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.6rem; }
+        .selected-line { display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; color: #0f3b4a; }
+        .selected-line .val { color: #0a4b5c; font-weight: 700; }
+        .selected-line .consult { color: #7a5b00; }
+        .total-line { display: flex; justify-content: space-between; align-items: center; padding-top: 0.6rem; border-top: 2px solid #b9d3e3; font-weight: 800; font-size: 1.05rem; color: #0a2e3c; }
+        .total-line .amount { color: #0a4b5c; font-size: 1.35rem; }
+        .deposit-note { font-size: 0.78rem; color: #3e6577; font-weight: 600; margin-top: 0.4rem; }
+        .price-tag { font-size: 1.2rem; font-weight: 800; color: #0a4b5c; white-space: nowrap; }
+        .special-notice { background: #fff8e1; border: 1.5px solid #f0c674; border-radius: 18px; padding: 0.8rem 1.2rem; margin-top: 0.8rem; font-size: 0.82rem; color: #7a5b00; display: flex; align-items: flex-start; gap: 0.6rem; font-weight: 500; line-height: 1.5; }
+        .special-notice i { color: #d9a400; font-size: 1rem; margin-top: 0.1rem; }
+        .doc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin: 1.2rem 0; }
+        .doc-card { background: #f5faff; border-radius: 20px; padding: 1.2rem; border: 1.8px dashed #b6cfdf; display: flex; flex-direction: column; gap: 0.6rem; }
+        .doc-card i { font-size: 1.6rem; color: #3d7b8c; }
+        .doc-card h4 { font-size: 0.9rem; font-weight: 700; color: #123e4e; }
+        .doc-card input[type="file"] { background: white; border-radius: 40px; padding: 0.45rem 0.8rem; font-size: 0.7rem; border: 1px solid #c2d7e5; width: 100%; cursor: pointer; }
+        .doc-card input[type="file"]::file-selector-button { background: #0b3b4b; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 30px; font-weight: 600; font-size: 0.7rem; margin-right: 0.6rem; cursor: pointer; }
+        .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; gap: 1rem; }
+        .btn { padding: 0.8rem 1.8rem; border-radius: 50px; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; background: white; color: #0b3b4b; border: 1.5px solid #b9cedb; }
+        .btn-primary { background: #0b3b4b; color: white; border: 1.5px solid #0b3b4b; box-shadow: 0 10px 20px -10px #0b3b4ba0; }
+        .btn-primary:hover { background: #124e61; transform: translateY(-2px); }
+        .btn-secondary:hover { background: #e2eff7; border-color: #7fa7bb; }
+        .btn-sm { padding: 0.45rem 1rem; font-size: 0.75rem; }
+        .success-banner { background: #e2f7e9; border: 2px solid #6bbf8a; border-radius: 24px; padding: 2rem; margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 1.2rem; }
+        .success-banner i { font-size: 2.5rem; color: #1e7e45; margin-top: 0.2rem; }
+        .success-banner h3 { font-size: 1.3rem; color: #1e7e45; font-weight: 700; margin-bottom: 0.4rem; }
+        .success-banner p { color: #1e7e45; font-weight: 500; line-height: 1.6; font-size: 0.9rem; }
+        .success-actions { display: flex; justify-content: flex-end; margin-top: 1.8rem; }
+        .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 60vh; padding: 1rem; }
+        .login-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(14px); border-radius: 2.5rem; padding: 2.5rem 2.5rem 2rem; max-width: 420px; width: 100%; box-shadow: 0 30px 60px -20px rgba(0,20,40,0.35), 0 0 0 1px rgba(255,255,255,0.6) inset; border: 1px solid rgba(255,255,255,0.7); }
+        .login-card h2 { font-size: 1.6rem; font-weight: 700; color: #0a2e3c; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.6rem; }
+        .login-card h2 i { color: #3d7b8c; background: #d9e7f0; padding: 0.5rem; border-radius: 16px; font-size: 1.3rem; }
+        .login-sub { color: #3e6577; font-size: 0.85rem; font-weight: 500; margin-bottom: 1.8rem; line-height: 1.5; }
+        .login-sub strong { color: #0b3b4b; }
+        .login-field { margin-bottom: 1.2rem; }
+        .login-field label { font-size: 0.8rem; font-weight: 600; color: #1d495a; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem; }
+        .login-field label i { color: #5b8b9c; font-size: 0.8rem; }
+        .login-field input { width: 100%; padding: 0.9rem 1.1rem; border-radius: 16px; border: 1.8px solid #cbdde8; font-size: 0.95rem; outline: none; transition: 0.2s; font-weight: 500; color: #0c2d3b; }
+        .login-field input:focus { border-color: #3d7b8c; box-shadow: 0 0 0 3px rgba(61,123,140,0.15); }
+        .login-error { background: #fde7e7; border: 1.5px solid #e2a5a5; color: #9a2f2f; padding: 0.7rem 1rem; border-radius: 14px; font-size: 0.82rem; font-weight: 600; margin-bottom: 1rem; display: none; align-items: center; gap: 0.5rem; }
+        .login-error.show { display: flex; }
+        .login-btn { width: 100%; padding: 0.95rem; border-radius: 50px; background: #0b3b4b; color: white; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 14px 24px -12px #0b3b4b; display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-top: 0.5rem; }
+        .login-btn:hover { background: #124e61; transform: translateY(-2px); box-shadow: 0 18px 30px -14px #0b3b4b; }
+        .login-hint { font-size: 0.72rem; color: #5b7a8a; text-align: center; margin-top: 1.2rem; font-weight: 500; line-height: 1.5; background: #eef5fa; padding: 0.6rem 1rem; border-radius: 30px; }
+        .login-hint i { color: #3d7b8c; }
+        .login-hint a { color: #0b3b4b; font-weight: 700; text-decoration: none; }
+        .login-hint a:hover { text-decoration: underline; }
+        .profile-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+        .profile-header h2 { font-size: 1.4rem; color: #0f3b4a; display: flex; align-items: center; gap: 0.6rem; }
+        .profile-header h2 i { color: #3d7b8c; background: #d9e7f0; padding: 0.5rem; border-radius: 14px; font-size: 1.1rem; }
+        .btn-logout { background: #fde7e7; color: #9a2f2f; border: 1.5px solid #e2a5a5; }
+        .btn-logout:hover { background: #f9d5d5; border-color: #d48a8a; }
+        .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; }
+        .profile-card { background: #ffffffd9; border-radius: 24px; padding: 1.5rem; border: 1px solid #d5e2ec; box-shadow: 0 8px 16px -10px rgba(0,0,0,0.1); }
+        .profile-card h4 { font-size: 0.9rem; font-weight: 700; color: #0f3b4a; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 2px solid #e2eff7; padding-bottom: 0.5rem; }
+        .profile-card h4 i { color: #3d7b8c; }
+        .profile-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid #eef5fa; font-size: 0.85rem; }
+        .profile-row:last-child { border-bottom: none; }
+        .profile-row .label { font-weight: 600; color: #2b5668; }
+        .profile-row .value { font-weight: 500; color: #0c2d3b; text-align: right; max-width: 60%; word-break: break-word; }
+        .badge { display: inline-block; background: #0b3b4b; color: white; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 30px; }
+        .status-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.85rem; border-radius: 30px; text-transform: capitalize; }
+        .status-badge.awaiting { background: #fef3c7; color: #92400e; }
+        .status-badge.pending { background: #dbeafe; color: #1e40af; }
+        .status-badge.accepted { background: #d1fae5; color: #065f46; }
+        .status-badge.declined { background: #fee2e2; color: #991b1b; }
+        .status-badge.documents { background: #fef3c7; color: #92400e; }
+        .status-badge.consult { background: #ffedd5; color: #c2410c; }
+        .required-star { color: #b13e3e; margin-left: 2px; }
+        .upload-docs-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.9rem; padding: 0.7rem 1.4rem; border-radius: 50px; background: #ffedd5; border: 1.5px solid #f0a86a; color: #9a3412; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 16px -10px rgba(240,168,106,0.6); }
+        .upload-docs-btn:hover { background: #fed7aa; border-color: #d97706; transform: translateY(-2px); }
+        .upload-docs-btn i { font-size: 0.9rem; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,20,30,0.55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1100; padding: 1rem; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: white; border-radius: 2rem; max-width: 640px; width: 100%; max-height: 92vh; overflow-y: auto; padding: 2rem; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.4); }
+        .modal-box h3 { font-size: 1.15rem; color: #0f3b4a; margin-bottom: 0.3rem; display: flex; justify-content: space-between; align-items: center; }
+        .modal-box .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #5b7a8a; padding: 0.2rem 0.5rem; border-radius: 50%; }
+        .modal-box .modal-close:hover { background: #eef5fa; }
+        .modal-box .modal-sub { font-size: 0.82rem; color: #537f91; font-weight: 500; margin-bottom: 1.2rem; line-height: 1.5; }
+        .upload-current { font-size: 0.78rem; color: #1e7e45; font-weight: 600; background: #e2f7e9; border: 1px solid #b8e6c8; border-radius: 14px; padding: 0.5rem 0.9rem; margin-bottom: 0.8rem; }
+        .upload-current i { margin-right: 0.3rem; }
+        .modal-box .form-actions { margin-top: 1.4rem; }
+        @media (max-width: 750px) {
+            .topbar { border-radius: 30px; padding: 0.8rem 1.2rem; }
+            .card { padding: 1.5rem; }
+            .steps::before { left: 20px; right: 20px; }
+            .step-label { font-size: 0.55rem; padding: 0.15rem 0.4rem; }
+            .btn { padding: 0.7rem 1.2rem; font-size: 0.8rem; }
+            .profile-grid { grid-template-columns: 1fr; }
+            .nav-tab { padding: 0.45rem 1rem; font-size: 0.75rem; }
+            .brand h1 { font-size: 1.2rem; }
+            .course-item { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div class="topbar">
+        <div class="brand">
+            <img src="IVY STONE logo.png" alt="IVY STONE" style="height:2.2rem;" onerror="this.style.display='none'">
+            <h1>IVY STONE <span>TRAINING CENTRE</span></h1>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-nav="login" onclick="switchPage('login')"><i class="fas fa-sign-in-alt"></i> Student Login</button>
+            <button class="nav-tab" data-nav="register" onclick="switchPage('register')"><i class="fas fa-user-plus"></i> Register</button>
+        </div>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div class="page-section active-section" id="page-login">
+        <div class="login-wrapper" id="loginFormWrapper">
+            <div class="login-card">
+                <h2><i class="fas fa-sign-in-alt"></i> Student Login</h2>
+                <p class="login-sub">Use your <strong>surname</strong> as your username and your <strong>ID number</strong> as your password.</p>
+                <div class="login-error" id="loginError">
+                    <i class="fas fa-exclamation-circle"></i> <span id="loginErrorText">Invalid surname or ID number. Please try again.</span>
+                </div>
+                <div class="login-field">
+                    <label><i class="fas fa-user"></i> Surname (username)</label>
+                    <input type="text" id="loginSurname" placeholder="e.g. Mokoena" autocomplete="username">
+                </div>
+                <div class="login-field">
+                    <label><i class="fas fa-id-card"></i> ID number (password)</label>
+                    <input type="password" id="loginIdNumber" placeholder="13-digit ID number" autocomplete="current-password" maxlength="13">
+                </div>
+                <button class="login-btn" onclick="studentLogin()"><i class="fas fa-arrow-right-to-bracket"></i> Login to my profile</button>
+                <div class="login-hint">
+                    <i class="fas fa-info-circle"></i> Not yet registered? <a href="#" onclick="switchPage('register'); return false;">Register here</a>.
+                </div>
+            </div>
+        </div>
+        <div class="card" id="studentProfileCard" style="display: none;">
+            <div class="profile-header">
+                <h2><i class="fas fa-user-graduate"></i> My Student Profile</h2>
+                <button class="btn btn-logout btn-sm" onclick="studentLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+            <div id="studentProfileDisplay"></div>
+        </div>
+    </div>
+
+    <!-- REGISTER PAGE -->
+    <div class="page-section" id="page-register">
+        <div class="card" id="wizardCard">
+            <div class="steps" id="progressSteps">
+                <div class="step active" data-step="1"><div class="step-icon">1</div><div class="step-label">Personal</div></div>
+                <div class="step" data-step="2"><div class="step-icon">2</div><div class="step-label">Guardian</div></div>
+                <div class="step" data-step="3"><div class="step-icon">3</div><div class="step-label">Academic</div></div>
+                <div class="step" data-step="4"><div class="step-icon">4</div><div class="step-label">Documents</div></div>
+            </div>
+
+            <!-- STEP 1 -->
+            <div class="form-step active-form" id="step1">
+                <h2><i class="fas fa-user-circle"></i> Personal details</h2>
+                <div class="input-grid">
+                    <div class="field"><label><i class="fas fa-user"></i> First name <span class="required-star">*</span></label><input type="text" id="firstName" placeholder="e.g. Thabo"></div>
+                    <div class="field"><label><i class="fas fa-user"></i> Surname <span class="required-star">*</span></label><input type="text" id="surname" placeholder="e.g. Mokoena"></div>
+                    <div class="field"><label><i class="fas fa-id-card"></i> ID number <span class="required-star">*</span></label><input type="text" id="idNumber" placeholder="13-digit ID" maxlength="13"></div>
+                    <div class="field"><label><i class="fas fa-calendar-alt"></i> Date of birth <span class="required-star">*</span></label><input type="date" id="dob"></div>
+                    <div class="field"><label><i class="fas fa-venus-mars"></i> Gender <span class="required-star">*</span></label>
+                        <select id="gender"><option value="">Select</option><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select>
+                    </div>
+                    <div class="field"><label><i class="fas fa-users"></i> Race</label><input type="text" id="race" placeholder="e.g. African, Coloured"></div>
+                    <div class="field"><label><i class="fas fa-globe"></i> Nationality</label><input type="text" id="nationality" placeholder="e.g. South African"></div>
+                    <div class="field"><label><i class="fas fa-language"></i> Home language</label><input type="text" id="homeLanguage" placeholder="e.g. isiZulu"></div>
+                    <div class="field"><label><i class="fas fa-phone-alt"></i> Phone number <span class="required-star">*</span></label><input type="tel" id="phone" placeholder="082 123 4567"></div>
+                    <div class="field"><label><i class="fas fa-phone-square-alt"></i> Alternative phone</label><input type="tel" id="altPhone" placeholder="Optional"></div>
+                    <div class="field"><label><i class="fas fa-envelope"></i> Email <span class="required-star">*</span></label><input type="email" id="email" placeholder="you@example.com"></div>
+                    <div class="field" style="grid-column: span 2;"><label><i class="fas fa-home"></i> Home address <span class="required-star">*</span></label><input type="text" id="homeAddress" placeholder="Street, suburb, city, postal code"></div>
+                    <div class="field"><label><i class="fas fa-address-book"></i> Next of kin <span class="required-star">*</span></label><input type="text" id="nextOfKin" placeholder="Full name & relationship"></div>
+                    <div class="field"><label><i class="fas fa-phone-alt"></i> Next of kin phone</label><input type="tel" id="nextOfKinPhone" placeholder="Emergency contact"></div>
+                </div>
+                <div class="form-actions"><span></span><button class="btn btn-primary" onclick="goToStep(2)">Next: Guardian <i class="fas fa-arrow-right"></i></button></div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="form-step" id="step2">
+                <h2><i class="fas fa-user-friends"></i> Parent / Guardian details</h2>
+                <div class="input-grid">
+                    <div class="field"><label><i class="fas fa-user"></i> Guardian name <span class="required-star">*</span></label><input type="text" id="guardianName" placeholder="First name"></div>
+                    <div class="field"><label><i class="fas fa-user"></i> Guardian surname <span class="required-star">*</span></label><input type="text" id="guardianSurname" placeholder="Surname"></div>
+                    <div class="field"><label><i class="fas fa-id-card"></i> Guardian ID <span class="required-star">*</span></label><input type="text" id="guardianId" placeholder="13-digit ID"></div>
+                    <div class="field"><label><i class="fas fa-link"></i> Relationship <span class="required-star">*</span></label>
+                        <select id="relationship"><option value="">Select</option><option>Mother</option><option>Father</option><option>Other (specify)</option></select>
+                    </div>
+                    <div class="field" id="otherRelationshipField" style="display:none;"><label><i class="fas fa-pen"></i> Specify relationship</label><input type="text" id="otherRelationship" placeholder="e.g. Aunt"></div>
+                </div>
+                <div class="checkbox-field"><input type="checkbox" id="sameAddress"><label for="sameAddress"><i class="fas fa-copy"></i> Guardian address same as my home address</label></div>
+                <div id="guardianAddressSection"><div class="field"><label><i class="fas fa-home"></i> Guardian home address <span class="required-star">*</span></label><input type="text" id="guardianAddress" placeholder="Street, suburb, city"></div></div>
+                <div class="form-actions"><button class="btn btn-secondary" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="goToStep(3)">Next: Academic <i class="fas fa-arrow-right"></i></button></div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="form-step" id="step3">
+                <h2><i class="fas fa-graduation-cap"></i> Academic details</h2>
+                <div class="input-grid">
+                    <div class="field"><label><i class="fas fa-calendar"></i> Year of study <span class="required-star">*</span></label>
+                        <select id="yearOfStudy"><option value="">Select year</option><option>2025</option><option>2026</option><option>2027</option></select>
+                    </div>
+                    <div class="field"><label><i class="fas fa-building"></i> Faculty <span class="required-star">*</span></label>
+                        <select id="faculty">
+                            <option value="">Select faculty</option>
+                            <option value="Professional Training">Professional Training</option>
+                            <option value="Skills Programmes">Skills Programmes</option>
+                        </select>
+                    </div>
+                    <div class="field"><label><i class="fas fa-certificate"></i> Matric certificate number</label><input type="text" id="matricNumber" placeholder="Certificate number"></div>
+                    <div class="field"><label><i class="fas fa-school"></i> Previous institution</label><input type="text" id="previousInstitution" placeholder="If transferred"></div>
+                    <div class="field"><label><i class="fas fa-id-badge"></i> Previous student number</label><input type="text" id="previousStudentNumber" placeholder="If transferred"></div>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                    <label style="font-weight: 600; color: #1d495a; font-size: 0.85rem;"><i class="fas fa-search"></i> Search course</label>
+                    <div class="course-search-wrapper"><i class="fas fa-search"></i><input type="text" id="courseSearchInput" placeholder="Select a faculty first, then search..." autocomplete="off" disabled></div>
+                    <div class="course-list" id="courseList">
+                        <div style="padding: 1rem; color: #537f91; font-size:0.85rem;"><i class="fas fa-info-circle"></i> Please select a faculty above to see available courses.</div>
+                    </div>
+                </div>
+                <div id="specialNoticeContainer"></div>
+                <div class="selected-course-display" id="selectedCourseDisplay">
+                    <div class="selected-list" id="selectedList">
+                        <div style="font-size:0.88rem; color:#537f91; font-weight:600;"><i class="fas fa-info-circle"></i> No courses selected yet.</div>
+                    </div>
+                    <div class="total-line" id="totalLine" style="display:none;">
+                        <span>Total payable</span>
+                        <span class="amount" id="totalAmount">R0</span>
+                    </div>
+                    <div class="deposit-note" id="depositNote" style="display:none;"></div>
+                </div>
+                <div class="form-actions"><button class="btn btn-secondary" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="goToStep(4)">Next: Documents <i class="fas fa-arrow-right"></i></button></div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="form-step" id="step4">
+                <h2><i class="fas fa-upload"></i> Upload documents</h2>
+                <p style="color: #2a5f72; margin-bottom: 0.8rem; font-weight: 500; font-size: 0.85rem;">Upload clear certified copies (PDF or image). Files are stored securely.</p>
+                <div class="doc-grid">
+                    <div class="doc-card"><i class="fas fa-id-card"></i><h4>Certified ID copy <span class="required-star">*</span></h4><input type="file" id="docId" accept=".pdf,.jpg,.jpeg,.png"></div>
+                    <div class="doc-card"><i class="fas fa-file-alt"></i><h4>School results / Matric <span class="required-star">*</span></h4><input type="file" id="docMatric" accept=".pdf,.jpg,.jpeg,.png"></div>
+                    <div class="doc-card"><i class="fas fa-house-chimney"></i><h4>Proof of residence <span class="required-star">*</span></h4><input type="file" id="docResidence" accept=".pdf,.jpg,.jpeg,.png"></div>
+                    <div class="doc-card"><i class="fas fa-file-pdf"></i><h4>CV <span class="required-star">*</span></h4><input type="file" id="docCv" accept=".pdf,.jpg,.jpeg,.png"></div>
+                    <div class="doc-card"><i class="fas fa-passport"></i><h4>Student permit (international)</h4><input type="file" id="docPermit" accept=".pdf,.jpg,.jpeg,.png"></div>
+                </div>
+                <div class="form-actions"><button class="btn btn-secondary" onclick="goToStep(3)"><i class="fas fa-arrow-left"></i> Back</button><button class="btn btn-primary" onclick="submitRegistration()">Complete registration <i class="fas fa-check-circle"></i></button></div>
+            </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="card" id="successCard" style="display: none;">
+            <div class="success-banner">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <h3>Registration successful!</h3>
+                    <p>Your details have been saved and are <strong>awaiting approval</strong>. You can now <strong>log in</strong> using your <strong>surname</strong> as username and your <strong>ID number</strong> as password to view and check your registration status.</p>
+                </div>
+            </div>
+            <div class="success-actions">
+                <button class="btn btn-primary" onclick="successOk()"><i class="fas fa-check"></i> OK — go to login</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- UPLOAD CLEAR DOCUMENTS MODAL -->
+<div class="modal-overlay" id="uploadDocsModal">
+    <div class="modal-box">
+        <h3><i class="fas fa-upload"></i> Upload clear documents <button class="modal-close" onclick="closeUploadDocsModal()">&times;</button></h3>
+        <p class="modal-sub">The office has requested clearer copies of your documents. Upload a new version for any document that needs replacing. Your existing files stay in place until you submit a replacement.</p>
+        <div class="upload-current" id="uploadCurrentStatus"></div>
+        <div class="doc-grid">
+            <div class="doc-card"><i class="fas fa-id-card"></i><h4>Certified ID copy <span class="required-star">*</span></h4><input type="file" id="reDocId" accept=".pdf,.jpg,.jpeg,.png"></div>
+            <div class="doc-card"><i class="fas fa-file-alt"></i><h4>School results / Matric <span class="required-star">*</span></h4><input type="file" id="reDocMatric" accept=".pdf,.jpg,.jpeg,.png"></div>
+            <div class="doc-card"><i class="fas fa-house-chimney"></i><h4>Proof of residence <span class="required-star">*</span></h4><input type="file" id="reDocResidence" accept=".pdf,.jpg,.jpeg,.png"></div>
+            <div class="doc-card"><i class="fas fa-file-pdf"></i><h4>CV <span class="required-star">*</span></h4><input type="file" id="reDocCv" accept=".pdf,.jpg,.jpeg,.png"></div>
+            <div class="doc-card"><i class="fas fa-passport"></i><h4>Student permit (international)</h4><input type="file" id="reDocPermit" accept=".pdf,.jpg,.jpeg,.png"></div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-secondary" onclick="closeUploadDocsModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitClearDocuments()"><i class="fas fa-check-circle"></i> Submit documents</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= SUPABASE + APP SCRIPT ================= -->
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabaseUrl = 'https://yqdbqtownrahbvbxdoyx.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZGJxdG93bnJhaGJ2Ynhkb3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3OTA5ODgsImV4cCI6MjExMDM2Njk4OH0.lFw4nw26R-Xyls63YZdc2qxCvvrMKp3RDFZ0JrjnRP8';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // -------- Constants --------
+    const SPECIAL_END_DATE = new Date('2026-11-30T23:59:59');
+    const PROFESSIONAL_COURSES = [
+        { id: 'facilitator', name: 'Facilitator', price: 3500 },
+        { id: 'assessor',    name: 'Assessor',    price: 3500 },
+        { id: 'moderator',   name: 'Moderator',   price: 3500 }
+    ];
+    const SPECIAL_BUNDLE_PRICE = 3500;
+    const PROFESSIONAL_DEPOSIT = 1750;
+    
+    const SKILLS_COURSES = [
+        { id: 'matric',    name: 'Matric (NQF Level 4)',      price: 10200, duration: '12 months', monthly: 'R850/m' },
+        { id: 'computer',  name: 'Basic Computer Skills',     price: 5500,  duration: '4 months',  monthly: 'R1375/m' },
+        { id: 'firstaid',  name: 'First Aid (NQF Level 2-4)', price: 7500,  duration: '6 months',  monthly: 'R1250/m' },
+        { id: 'entre',     name: 'Entrepreneurship (NQF Level 4)', price: 12500, duration: '12 months', monthly: 'R1042/m' },
+        { id: 'code8',     name: 'Code 8 Driver Licence',     price: 6000,  duration: 'Includes learners, booking, car hire' },
+        { id: 'makeup',    name: 'Make up',                   price: 3000,  duration: '1-6 months (R3000 - R18000)' },
+        { id: 'nail',      name: 'Nail Tech',                 price: 3000,  duration: '2 weeks' }
+    ];
+    const SKILLS_SPECIAL_BUNDLE = { id: 'skills_special', name: 'Special Bundle (Skills)', price: null };
+    const SKILLS_REG_FEE = 1500;
+
+    // -------- State --------
+    let loggedInStudentId = null;
+    let loggedInStudent   = null;
+    let professionalSelection = { special: false, courses: new Set() };
+    let skillsSelection = new Set();
+    let currentFaculty = '';
+
+    const wizardCard = document.getElementById('wizardCard');
+    const successCard = document.getElementById('successCard');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const step4 = document.getElementById('step4');
+    const steps = document.querySelectorAll('.step');
+    const facultySelect = document.getElementById('faculty');
+    const courseSearchInput = document.getElementById('courseSearchInput');
+    const courseListDiv = document.getElementById('courseList');
+    const selectedListDiv = document.getElementById('selectedList');
+    const totalLine = document.getElementById('totalLine');
+    const totalAmountSpan = document.getElementById('totalAmount');
+    const depositNote = document.getElementById('depositNote');
+    const specialNoticeContainer = document.getElementById('specialNoticeContainer');
+
+    // -------- Guardian address sync --------
+    const relationshipSelect = document.getElementById('relationship');
+    const otherRelationshipField = document.getElementById('otherRelationshipField');
+    relationshipSelect.addEventListener('change', function() {
+        otherRelationshipField.style.display = this.value === 'Other (specify)' ? 'flex' : 'none';
+    });
+
+    const sameAddressCheck = document.getElementById('sameAddress');
+    const guardianAddressInput = document.getElementById('guardianAddress');
+    const homeAddressInput = document.getElementById('homeAddress');
+    sameAddressCheck.addEventListener('change', function() {
+        if (this.checked) {
+            guardianAddressInput.value = homeAddressInput.value;
+            guardianAddressInput.disabled = true;
+            guardianAddressInput.style.background = '#f2f7fa';
+        } else {
+            guardianAddressInput.disabled = false;
+            guardianAddressInput.style.background = '#ffffff';
+        }
+    });
+    homeAddressInput.addEventListener('input', function() {
+        if (sameAddressCheck.checked) guardianAddressInput.value = homeAddressInput.value;
+    });
+
+    // -------- UI helpers --------
+    function renderSpecialNotice() {
+        specialNoticeContainer.innerHTML = '';
+        if (currentFaculty !== 'Professional Training') return;
+        const now = new Date();
+        const isActive = now <= SPECIAL_END_DATE;
+        specialNoticeContainer.innerHTML = isActive
+            ? `<div class="special-notice"><i class="fas fa-star"></i><div><strong>Special bundle active until 30 November 2026.</strong><br>Select the <strong>Special (Facilitator + Assessor + Moderator)</strong> for <strong>R3 500 once-off</strong> (deposit <strong>R1 750</strong> subtracted from subtotal).</div></div>`
+            : `<div class="special-notice"><i class="fas fa-info-circle"></i><div>The special bundle ended on 30 November 2026. You may select individual courses at <strong>R3 500 each once-off</strong> (deposit <strong>R1 750</strong> subtracted once).</div></div>`;
+    }
+
+    function renderCourses(filterText = '') {
+        if (!currentFaculty) {
+            courseListDiv.innerHTML = '<div style="padding: 1rem; color: #537f91; font-size:0.85rem;"><i class="fas fa-info-circle"></i> Please select a faculty above to see available courses.</div>';
+            return;
+        }
+        const lowerFilter = (filterText || '').toLowerCase();
+        courseListDiv.innerHTML = '';
+
+        if (currentFaculty === 'Professional Training') {
+            const now = new Date();
+            const specialActive = now <= SPECIAL_END_DATE;
+            if (specialActive) {
+                const specialDiv = document.createElement('div');
+                const isSpecial = professionalSelection.special;
+                specialDiv.className = 'course-item' + (isSpecial ? ' selected' : '');
+                specialDiv.innerHTML = `
+                    <div class="course-info">
+                        <span>${isSpecial ? '<i class="fas fa-check-circle check-mark"></i>' : ''}<i class="fas fa-star" style="color:#d9a400;"></i> <strong>Special: Facilitator + Assessor + Moderator</strong></span>
+                        <span class="course-meta">All 3 courses · Deposit R1 750 subtracted · Special until 30 Nov 2026</span>
+                    </div>
+                    <span class="course-price">R3 500 once-off</span>`;
+                specialDiv.addEventListener('click', () => {
+                    professionalSelection.special = !professionalSelection.special;
+                    if (professionalSelection.special) professionalSelection.courses.clear();
+                    updateSelectedSummary();
+                    renderCourses(courseSearchInput.value);
+                });
+                courseListDiv.appendChild(specialDiv);
+            }
+            PROFESSIONAL_COURSES.forEach(course => {
+                if (!course.name.toLowerCase().includes(lowerFilter)) return;
+                const isSelected = professionalSelection.courses.has(course.id);
+                const disabled = professionalSelection.special;
+                const div = document.createElement('div');
+                div.className = 'course-item' + (isSelected ? ' selected' : '') + (disabled ? ' disabled' : '');
+                div.innerHTML = `
+                    <div class="course-info">
+                        <span>${isSelected ? '<i class="fas fa-check-circle check-mark"></i>' : ''}<i class="fas fa-book"></i> ${course.name}</span>
+                        <span class="course-meta">R3 500 once-off · Deposit R1 750 subtracted once</span>
+                    </div>
+                    <span class="course-price">R${course.price.toLocaleString()}</span>`;
+                if (!disabled) {
+                    div.addEventListener('click', () => {
+                        if (professionalSelection.courses.has(course.id)) professionalSelection.courses.delete(course.id);
+                        else professionalSelection.courses.add(course.id);
+                        professionalSelection.special = false;
+                        updateSelectedSummary();
+                        renderCourses(courseSearchInput.value);
+                    });
+                }
+                courseListDiv.appendChild(div);
+            });
+        } else if (currentFaculty === 'Skills Programmes') {
+            const specialSkillsDiv = document.createElement('div');
+            const isSpecialSkills = skillsSelection.has('skills_special');
+            specialSkillsDiv.className = 'course-item' + (isSpecialSkills ? ' selected' : '');
+            specialSkillsDiv.innerHTML = `
+                <div class="course-info">
+                    <span>${isSpecialSkills ? '<i class="fas fa-check-circle check-mark"></i>' : ''}<i class="fas fa-star" style="color:#d9a400;"></i> <strong>Special Bundle (Skills)</strong></span>
+                    <span class="course-meta">Consult by the Office ;)</span>
+                </div>
+                <span class="course-price consult">Consult</span>`;
+            specialSkillsDiv.addEventListener('click', () => {
+                if (skillsSelection.has('skills_special')) skillsSelection.delete('skills_special');
+                else skillsSelection.add('skills_special');
+                updateSelectedSummary();
+                renderCourses(courseSearchInput.value);
+            });
+            courseListDiv.appendChild(specialSkillsDiv);
+
+            SKILLS_COURSES.forEach(course => {
+                if (!course.name.toLowerCase().includes(lowerFilter)) return;
+                const isSelected = skillsSelection.has(course.id);
+                const div = document.createElement('div');
+                div.className = 'course-item' + (isSelected ? ' selected' : '');
+                const priceLabel = course.price === null 
+                    ? '<span class="course-price consult">Consult</span>' 
+                    : `<span class="course-price">R${course.price.toLocaleString()}</span>`;
+                const metaLabel = course.monthly 
+                    ? `${course.duration} · ${course.monthly}` 
+                    : course.duration;
+                div.innerHTML = `
+                    <div class="course-info">
+                        <span>${isSelected ? '<i class="fas fa-check-circle check-mark"></i>' : ''}<i class="fas fa-book"></i> ${course.name}</span>
+                        <span class="course-meta">${metaLabel}</span>
+                    </div>
+                    ${priceLabel}`;
+                div.addEventListener('click', () => {
+                    if (skillsSelection.has(course.id)) skillsSelection.delete(course.id);
+                    else skillsSelection.add(course.id);
+                    updateSelectedSummary();
+                    renderCourses(courseSearchInput.value);
+                });
+                courseListDiv.appendChild(div);
+            });
+        }
+    }
+
+    function calculateTotals() {
+        let subtotal = 0, registrationFee = 0, items = [], hasConsult = false;
+        if (currentFaculty === 'Professional Training') {
+            if (professionalSelection.special) {
+                subtotal = SPECIAL_BUNDLE_PRICE;
+                items.push({ name: 'Special: Facilitator + Assessor + Moderator', price: SPECIAL_BUNDLE_PRICE, note: 'all 3 courses · once-off' });
+            } else if (professionalSelection.courses.size > 0) {
+                professionalSelection.courses.forEach(id => {
+                    const c = PROFESSIONAL_COURSES.find(x => x.id === id);
+                    if (c) { subtotal += c.price; items.push({ name: c.name, price: c.price }); }
+                });
+            }
+            if (items.length > 0) registrationFee = PROFESSIONAL_DEPOSIT;
+        } else if (currentFaculty === 'Skills Programmes') {
+            let count = 0;
+            skillsSelection.forEach(id => {
+                if (id === 'skills_special') {
+                    hasConsult = true;
+                    items.push({ name: 'Special Bundle (Skills)', price: null, note: 'Consult by the Office' });
+                } else {
+                    const c = SKILLS_COURSES.find(x => x.id === id);
+                    if (c) {
+                        if (c.price === null) { hasConsult = true; items.push({ name: c.name, price: null, note: 'Consult the center' }); }
+                        else { subtotal += c.price; items.push({ name: c.name, price: c.price, note: c.duration }); }
+                    }
+                }
+                count++;
+            });
+            if (count > 0) registrationFee = SKILLS_REG_FEE;
+        }
+        return { subtotal, registrationFee, items, hasConsult };
+    }
+
+    function computeFinalTotal(subtotal, registrationFee, faculty) {
+        if (faculty === 'Professional Training' && registrationFee > 0 && subtotal > 0) {
+            let t = subtotal - registrationFee;
+            return t < 0 ? 0 : t;
+        }
+        return subtotal + registrationFee;
+    }
+
+    function updateSelectedSummary() {
+        const { subtotal, registrationFee, items, hasConsult } = calculateTotals();
+        if (items.length === 0) {
+            selectedListDiv.innerHTML = '<div style="font-size:0.88rem; color:#537f91; font-weight:600;"><i class="fas fa-info-circle"></i> No courses selected yet.</div>';
+            totalLine.style.display = 'none';
+            depositNote.style.display = 'none';
+            return;
+        }
+        const finalTotal = computeFinalTotal(subtotal, registrationFee, currentFaculty);
+        let listHtml = '';
+        items.forEach(it => {
+            const priceHtml = it.price === null ? '<span class="val consult">Consult the center</span>' : `<span class="val">R${it.price.toLocaleString()}</span>`;
+            const noteHtml = it.note ? `<span class="course-meta">${it.note}</span>` : '';
+            listHtml += `<div class="selected-line" style="flex-direction:column; align-items:flex-start; gap:0.1rem; border-bottom:1px solid #d5e6f0; padding-bottom:0.35rem;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                    <span><i class="fas fa-check-circle" style="color:#3d7b8c;"></i> ${it.name}</span>${priceHtml}
+                </div>${noteHtml}</div>`;
+        });
+        listHtml += `<div class="selected-line" style="border-bottom:none; margin-top:0.35rem;"><span><i class="fas fa-calculator"></i> Courses subtotal</span><span class="val">R${subtotal.toLocaleString()}</span></div>`;
+        if (currentFaculty === 'Professional Training') {
+            listHtml += `<div class="selected-line" style="border-bottom:none; color:#1e7e45;"><span><i class="fas fa-check-circle"></i> Deposit subtracted (once)</span><span class="val" style="color:#1e7e45;">−R${registrationFee.toLocaleString()}</span></div>`;
+        } else {
+            listHtml += `<div class="selected-line" style="border-bottom:none;"><span><i class="fas fa-receipt"></i> Registration fee</span><span class="val">R${registrationFee.toLocaleString()}</span></div>`;
+        }
+        selectedListDiv.innerHTML = listHtml;
+        totalAmountSpan.textContent = 'R' + finalTotal.toLocaleString();
+        totalLine.style.display = 'flex';
+        let note = '';
+        if (currentFaculty === 'Professional Training') note = `Deposit of R1 750 is subtracted from the course subtotal (once). Total payable: R${finalTotal.toLocaleString()}.`;
+        else if (currentFaculty === 'Skills Programmes') note = `Registration fee: R1 500 (once-off).`;
+        if (hasConsult) note += ` <strong style="color:#7a5b00;">Note: One or more selected items require consultation with the center.</strong>`;
+        depositNote.innerHTML = note;
+        depositNote.style.display = 'block';
+    }
+
+    facultySelect.addEventListener('change', function() {
+        currentFaculty = this.value;
+        professionalSelection = { special: false, courses: new Set() };
+        skillsSelection = new Set();
+        updateSelectedSummary();
+        renderSpecialNotice();
+        courseSearchInput.value = '';
+        courseSearchInput.disabled = !currentFaculty;
+        courseSearchInput.placeholder = currentFaculty ? 'Type course name...' : 'Select a faculty first...';
+        renderCourses('');
+    });
+    courseSearchInput.addEventListener('input', function() { renderCourses(this.value); });
+
+    // -------- Navigation --------
+    window.goToStep = function(stepNumber) {
+        if (stepNumber === 3) {
+            if (!document.getElementById('guardianName').value.trim() || !document.getElementById('guardianSurname').value.trim()) { alert('Please fill in guardian name and surname.'); return; }
+            if (!document.getElementById('guardianId').value.trim()) { alert('Please provide guardian ID.'); return; }
+            if (relationshipSelect.value === '') { alert('Please select relationship.'); return; }
+            if (relationshipSelect.value === 'Other (specify)' && !document.getElementById('otherRelationship').value.trim()) { alert('Please specify relationship.'); return; }
+            if (!sameAddressCheck.checked && !guardianAddressInput.value.trim()) { alert('Please provide guardian home address.'); return; }
+        }
+        if (stepNumber === 4) {
+            if (!currentFaculty) { alert('Please select a faculty.'); return; }
+            let hasSelection = false;
+            if (currentFaculty === 'Professional Training') hasSelection = professionalSelection.special || professionalSelection.courses.size > 0;
+            else if (currentFaculty === 'Skills Programmes') hasSelection = skillsSelection.size > 0;
+            if (!hasSelection) { alert('Please select at least one course.'); return; }
+            if (!document.getElementById('yearOfStudy').value) { alert('Please select year of study.'); return; }
+        }
+        step1.classList.remove('active-form'); step2.classList.remove('active-form');
+        step3.classList.remove('active-form'); step4.classList.remove('active-form');
+        if (stepNumber === 1) step1.classList.add('active-form');
+        if (stepNumber === 2) step2.classList.add('active-form');
+        if (stepNumber === 3) step3.classList.add('active-form');
+        if (stepNumber === 4) step4.classList.add('active-form');
+        steps.forEach((s, idx) => {
+            const val = idx + 1;
+            s.classList.remove('active', 'completed');
+            if (val === stepNumber) s.classList.add('active');
+            else if (val < stepNumber) s.classList.add('completed');
+        });
+        if (stepNumber === 2 && sameAddressCheck.checked) guardianAddressInput.value = homeAddressInput.value;
+    };
+
+    // -------- Upload helper --------
+    async function uploadFileToStorage(file, folder) {
+        if (!file) return null;
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const filePath = `${folder}/${Date.now()}_${safeName}`;
+        
+        const { data, error } = await supabase.storage
+            .from('documents')
+            .upload(filePath, file);
+
+        if (error) throw error;
+
+        const { data: urlData } = supabase.storage
+            .from('documents')
+            .getPublicUrl(filePath);
+
+        return urlData.publicUrl;
+    }
+
+    // -------- Submit registration --------
+    window.submitRegistration = async function() {
+        const idFile = document.getElementById('docId').files[0];
+        const matricFile = document.getElementById('docMatric').files[0];
+        const residenceFile = document.getElementById('docResidence').files[0];
+        const cvFile = document.getElementById('docCv').files[0];
+        const permitFile = document.getElementById('docPermit').files[0];
+
+        const studentData = {
+            first_name: document.getElementById('firstName').value.trim(),
+            surname: document.getElementById('surname').value.trim(),
+            id_number: document.getElementById('idNumber').value.trim(),
+            dob: document.getElementById('dob').value,
+            gender: document.getElementById('gender').value,
+            race: document.getElementById('race').value.trim(),
+            nationality: document.getElementById('nationality').value.trim(),
+            home_language: document.getElementById('homeLanguage').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            alt_phone: document.getElementById('altPhone').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            home_address: document.getElementById('homeAddress').value.trim(),
+            next_of_kin: document.getElementById('nextOfKin').value.trim(),
+            next_of_kin_phone: document.getElementById('nextOfKinPhone').value.trim(),
+            guardian_name: document.getElementById('guardianName').value.trim(),
+            guardian_surname: document.getElementById('guardianSurname').value.trim(),
+            guardian_id: document.getElementById('guardianId').value.trim(),
+            relationship: relationshipSelect.value === 'Other (specify)' ? document.getElementById('otherRelationship').value.trim() : relationshipSelect.value,
+            guardian_address: sameAddressCheck.checked ? document.getElementById('homeAddress').value.trim() : document.getElementById('guardianAddress').value.trim(),
+            year_of_study: document.getElementById('yearOfStudy').value,
+            faculty: currentFaculty,
+            matric_number: document.getElementById('matricNumber').value.trim(),
+            previous_institution: document.getElementById('previousInstitution').value.trim(),
+            previous_student_number: document.getElementById('previousStudentNumber').value.trim()
+        };
+
+        if (!studentData.first_name || !studentData.surname || !studentData.id_number || !studentData.dob || !studentData.gender || !studentData.phone || !studentData.email || !studentData.home_address || !studentData.next_of_kin) {
+            alert('Please fill in all required personal details (marked with *).'); return;
+        }
+        if (!studentData.guardian_name || !studentData.guardian_surname || !studentData.guardian_id || !studentData.relationship) {
+            alert('Please fill in all required guardian details.'); return;
+        }
+        if (!studentData.faculty || !studentData.year_of_study) { alert('Please fill in all required academic details.'); return; }
+
+        const { subtotal, registrationFee, items, hasConsult } = calculateTotals();
+        if (items.length === 0) { alert('Please select at least one course.'); return; }
+
+        if (!idFile) { alert('Certified ID copy is compulsory.'); return; }
+        if (!matricFile) { alert('School results / Matric is compulsory.'); return; }
+        if (!residenceFile) { alert('Proof of residence is compulsory.'); return; }
+        if (!cvFile) { alert('CV is compulsory.'); return; }
+
+        try {
+            const { data: existing, error: dupErr } = await supabase
+                .from('students')
+                .select('id')
+                .eq('id_number', studentData.id_number)
+                .maybeSingle();
+                
+            if (dupErr && dupErr.code !== 'PGRST116') throw dupErr;
+            if (existing) { alert('A student with this ID number is already registered. Please log in instead.'); return; }
+        } catch (e) { console.error(e); alert('Could not check duplicates: ' + e.message); return; }
+
+        let docUrls = { id: null, matric: null, residence: null, cv: null, permit: null };
+        try {
+            if (idFile) docUrls.id = await uploadFileToStorage(idFile, 'students/id');
+            if (matricFile) docUrls.matric = await uploadFileToStorage(matricFile, 'students/matric');
+            if (residenceFile) docUrls.residence = await uploadFileToStorage(residenceFile, 'students/residence');
+            if (cvFile) docUrls.cv = await uploadFileToStorage(cvFile, 'students/cv');
+            if (permitFile) docUrls.permit = await uploadFileToStorage(permitFile, 'students/permit');
+        } catch (e) { alert('Error uploading documents: ' + e.message); return; }
+
+        const finalTotal = computeFinalTotal(subtotal, registrationFee, currentFaculty);
+        const studentRecord = {
+            ...studentData,
+            courses: items.map(it => ({ name: it.name, price: it.price, note: it.note || '' })),
+            registration_fee: registrationFee, 
+            subtotal: subtotal, 
+            total: finalTotal, 
+            has_consult: hasConsult,
+            documents: docUrls,
+            status: 'awaiting',
+            has_new_submission: true
+        };
+
+        try {
+            const { error: insertError } = await supabase
+                .from('students')
+                .insert([studentRecord]);
+
+            if (insertError) throw insertError;
+
+            wizardCard.style.display = 'none';
+            successCard.style.display = 'block';
+        } catch (e) { alert('Registration failed: ' + e.message); }
+    };
+
+    window.successOk = function() {
+        resetWizardInputs();
+        successCard.style.display = 'none';
+        wizardCard.style.display = 'block';
+        switchPage('login');
+    };
+
+    function resetWizardInputs() {
+        document.querySelectorAll('.form-step input, .form-step select').forEach(el => {
+            if (el.type === 'checkbox') el.checked = false;
+            else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+            else el.value = '';
+        });
+        document.querySelectorAll('.form-step input[type="file"]').forEach(el => el.value = '');
+        guardianAddressInput.disabled = false;
+        guardianAddressInput.style.background = '#ffffff';
+        otherRelationshipField.style.display = 'none';
+        currentFaculty = '';
+        professionalSelection = { special: false, courses: new Set() };
+        skillsSelection = new Set();
+        courseSearchInput.value = '';
+        courseSearchInput.disabled = true;
+        courseSearchInput.placeholder = 'Select a faculty first, then search...';
+        courseListDiv.innerHTML = '<div style="padding: 1rem; color: #537f91; font-size:0.85rem;"><i class="fas fa-info-circle"></i> Please select a faculty above to see available courses.</div>';
+        specialNoticeContainer.innerHTML = '';
+        updateSelectedSummary();
+        goToStep(1);
+    }
+
+    // -------- Status helpers --------
+    function statusLabel(s) {
+        const map = { awaiting: 'Waiting Approval', accepted: 'Accepted', declined: 'Declined', documents: 'Submit Clear Documents', consult: 'Consult the Office' };
+        return map[s] || 'Waiting Approval';
+    }
+    function statusClass(s) {
+        const map = { awaiting: 'awaiting', accepted: 'accepted', declined: 'declined', documents: 'documents', consult: 'consult' };
+        return map[s] || 'awaiting';
+    }
+
+    // -------- Render profile --------
+    function renderProfile(s, target) {
+        const docNames = [];
+        if (s.documents) {
+            if (s.documents.id) docNames.push('ID');
+            if (s.documents.matric) docNames.push('Matric');
+            if (s.documents.residence) docNames.push('Residence');
+            if (s.documents.cv) docNames.push('CV');
+            if (s.documents.permit) docNames.push('Permit');
+        }
+        const docStr = docNames.length ? docNames.join(', ') : 'None uploaded';
+
+        let coursesHtml = '';
+        if (s.courses && s.courses.length) {
+            coursesHtml = s.courses.map(c => {
+                const priceStr = (c.price === null || c.price === undefined || c.price === '')
+                    ? '<span style="color:#7a5b00;font-weight:700;">Consult the center</span>'
+                    : `<strong style="color:#0a4b5c;">R${Number(c.price).toLocaleString()}</strong>`;
+                const noteStr = c.note ? `<span style="font-size:0.72rem;color:#5b8b9c;"> — ${c.note}</span>` : '';
+                return `<div class="profile-row"><span class="label">${c.name}</span><span class="value">${priceStr}${noteStr}</span></div>`;
+            }).join('');
+        } else {
+            coursesHtml = '<div class="profile-row"><span class="label">Courses</span><span class="value">None</span></div>';
+        }
+
+        const totalStr = `R${Number(s.total || 0).toLocaleString()}`;
+        const subStr = `R${Number(s.subtotal || 0).toLocaleString()}`;
+        const regStr = `R${Number(s.registration_fee || 0).toLocaleString()}`;
+        const consultNote = s.has_consult ? `<div class="profile-row"><span class="label">Note</span><span class="value" style="color:#7a5b00;font-weight:700;">One or more items require consultation.</span></div>` : '';
+        const status = s.status || 'awaiting';
+        const statusHtml = `<span class="status-badge ${statusClass(status)}">${statusLabel(status)}</span>`;
+        const isProf = s.faculty === 'Professional Training';
+
+        const uploadBtnHtml = (status === 'documents')
+            ? `<button class="upload-docs-btn" onclick="openUploadDocsModal()"><i class="fas fa-cloud-upload-alt"></i> Upload clear documents</button>`
+            : '';
+
+        const submittedStr = s.submitted_at ? new Date(s.submitted_at).toLocaleString() : '—';
+
+        target.innerHTML = `
+            <div style="margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                <div style="display:flex; flex-direction:column; gap:0.5rem; align-items:flex-start;">
+                    <div><strong>Application status:</strong> ${statusHtml}</div>
+                    ${uploadBtnHtml}
+                </div>
+                <div style="font-size:0.78rem; color:#5b8b9c;">Submitted: ${submittedStr}</div>
+            </div>
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <h4><i class="fas fa-user"></i> Personal</h4>
+                    <div class="profile-row"><span class="label">Full name</span><span class="value">${s.first_name} ${s.surname}</span></div>
+                    <div class="profile-row"><span class="label">ID number</span><span class="value">${s.id_number}</span></div>
+                    <div class="profile-row"><span class="label">Date of birth</span><span class="value">${s.dob || '—'}</span></div>
+                    <div class="profile-row"><span class="label">Gender</span><span class="value">${s.gender || '—'}</span></div>
+                    <div class="profile-row"><span class="label">Race</span><span class="value">${s.race || '—'}</span></div>
+                    <div class="profile-row"><span class="label">Nationality</span><span class="value">${s.nationality || '—'}</span></div>
+                    <div class="profile-row"><span class="label">Home language</span><span class="value">${s.home_language || '—'}</span></div>
+                    <div class="profile-row"><span class="label">Phone</span><span class="value">${s.phone} ${s.alt_phone ? '/ ' + s.alt_phone : ''}</span></div>
+                    <div class="profile-row"><span class="label">Email</span><span class="value">${s.email}</span></div>
+                    <div class="profile-row"><span class="label">Home address</span><span class="value">${s.home_address}</span></div>
+                    <div class="profile-row"><span class="label">Next of kin</span><span class="value">${s.next_of_kin} ${s.next_of_kin_phone ? '(' + s.next_of_kin_phone + ')' : ''}</span></div>
+                </div>
+                <div class="profile-card">
+                    <h4><i class="fas fa-user-friends"></i> Guardian</h4>
+                    <div class="profile-row"><span class="label">Name</span><span class="value">${s.guardian_name} ${s.guardian_surname}</span></div>
+                    <div class="profile-row"><span class="label">ID number</span><span class="value">${s.guardian_id}</span></div>
+                    <div class="profile-row"><span class="label">Relationship</span><span class="value">${s.relationship}</span></div>
+                    <div class="profile-row"><span class="label">Address</span><span class="value">${s.guardian_address || 'Same as home'}</span></div>
+                </div>
+                <div class="profile-card">
+                    <h4><i class="fas fa-graduation-cap"></i> Academic</h4>
+                    <div class="profile-row"><span class="label">Year of study</span><span class="value">${s.year_of_study}</span></div>
+                    <div class="profile-row"><span class="label">Faculty</span><span class="value">${s.faculty}</span></div>
+                    ${coursesHtml}
+                    <div class="profile-row"><span class="label">Courses subtotal</span><span class="value">${subStr}</span></div>
+                    ${isProf
+                        ? `<div class="profile-row"><span class="label" style="color:#1e7e45;">Deposit subtracted (once)</span><span class="value" style="color:#1e7e45;">−${regStr}</span></div>`
+                        : `<div class="profile-row"><span class="label">Registration fee</span><span class="value">${regStr}</span></div>`}
+                    <div class="profile-row"><span class="label"><strong>Total payable</strong></span><span class="value" style="font-weight:800; color:#0a4b5c;">${totalStr}</span></div>
+                    ${consultNote}
+                    <div class="profile-row"><span class="label">Matric number</span><span class="value">${s.matric_number || '—'}</span></div>
+                    <div class="profile-row"><span class="label">Previous institution</span><span class="value">${s.previous_institution || '—'}</span></div>
+                    <div class="profile-row"><span class="label">Prev. student number</span><span class="value">${s.previous_student_number || '—'}</span></div>
+                </div>
+                <div class="profile-card">
+                    <h4><i class="fas fa-file-upload"></i> Documents</h4>
+                    <div class="profile-row"><span class="label">Uploaded</span><span class="value">${docStr}</span></div>
+                    <div class="profile-row"><span class="label">Status</span><span class="value">${statusHtml}</span></div>
+                </div>
+            </div>`;
+    }
+
+    // -------- Login --------
+    window.studentLogin = async function() {
+        const surnameInput = document.getElementById('loginSurname').value.trim();
+        const idInput = document.getElementById('loginIdNumber').value.trim();
+        const errorBox = document.getElementById('loginError');
+        const errorText = document.getElementById('loginErrorText');
+        errorBox.classList.remove('show');
+        if (!surnameInput || !idInput) {
+            errorText.textContent = 'Please enter both your surname and ID number.';
+            errorBox.classList.add('show'); return;
+        }
+        try {
+            const { data, error } = await supabase
+                .from('students')
+                .select('*')
+                .ilike('surname', surnameInput)
+                .eq('id_number', idInput)
+                .maybeSingle();
+
+            if (error) throw error;
+            if (!data) {
+                errorText.textContent = 'Invalid surname or ID number. Please check your details and try again.';
+                errorBox.classList.add('show'); return;
+            }
+
+            loggedInStudentId = data.id;
+            loggedInStudent = data;
+            document.getElementById('loginFormWrapper').style.display = 'none';
+            document.getElementById('studentProfileCard').style.display = 'block';
+            renderProfile(data, document.getElementById('studentProfileDisplay'));
+            document.getElementById('loginSurname').value = '';
+            document.getElementById('loginIdNumber').value = '';
+        } catch (e) { errorText.textContent = 'Error: ' + e.message; errorBox.classList.add('show'); }
+    };
+
+    window.studentLogout = function() {
+        loggedInStudentId = null;
+        loggedInStudent = null;
+        document.getElementById('loginFormWrapper').style.display = 'flex';
+        document.getElementById('studentProfileCard').style.display = 'none';
+        document.getElementById('studentProfileDisplay').innerHTML = '';
+    };
+
+    // -------- Upload clear documents --------
+    window.openUploadDocsModal = async function() {
+        if (!loggedInStudentId) return;
+        try {
+            const { data, error } = await supabase
+                .from('students')
+                .select('*')
+                .eq('id', loggedInStudentId)
+                .single();
+                
+            if (error) throw error;
+            loggedInStudent = data;
+            
+            if ((data.status || '') !== 'documents') { alert('The upload option is only available when the office requests clear documents.'); return; }
+            const existing = Object.keys(data.documents || {}).filter(k => data.documents[k]);
+            document.getElementById('uploadCurrentStatus').innerHTML = `<i class="fas fa-info-circle"></i> Current documents on file: <strong>${existing.length ? existing.join(', ') : 'None'}</strong>. Upload replacements below — anything you leave blank stays unchanged.`;
+        } catch (e) { console.error(e); }
+        
+        ['reDocId','reDocMatric','reDocResidence','reDocCv','reDocPermit'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        document.getElementById('uploadDocsModal').classList.add('open');
+    };
+
+    window.closeUploadDocsModal = function() {
+        document.getElementById('uploadDocsModal').classList.remove('open');
+    };
+
+    window.submitClearDocuments = async function() {
+        if (!loggedInStudentId) return;
+        const idFile = document.getElementById('reDocId').files[0];
+        const matricFile = document.getElementById('reDocMatric').files[0];
+        const residenceFile = document.getElementById('reDocResidence').files[0];
+        const cvFile = document.getElementById('reDocCv').files[0];
+        const permitFile = document.getElementById('reDocPermit').files[0];
+        if (!idFile && !matricFile && !residenceFile && !cvFile && !permitFile) { alert('Please select at least one new document to upload.'); return; }
+
+        let newDocs = {};
+        try {
+            if (idFile) newDocs.id = await uploadFileToStorage(idFile, 'students/id');
+            if (matricFile) newDocs.matric = await uploadFileToStorage(matricFile, 'students/matric');
+            if (residenceFile) newDocs.residence = await uploadFileToStorage(residenceFile, 'students/residence');
+            if (cvFile) newDocs.cv = await uploadFileToStorage(cvFile, 'students/cv');
+            if (permitFile) newDocs.permit = await uploadFileToStorage(permitFile, 'students/permit');
+        } catch (e) { alert('Error uploading: ' + e.message); return; }
+
+        const updatedDocs = { ...(loggedInStudent.documents || {}), ...newDocs };
+        try {
+            const { error } = await supabase
+                .from('students')
+                .update({
+                    documents: updatedDocs,
+                    status: 'awaiting',
+                    status_updated_at: new Date().toISOString(),
+                    submitted_at: new Date().toISOString(),
+                    has_new_submission: true
+                })
+                .eq('id', loggedInStudentId);
+                
+            if (error) throw error;
+
+            closeUploadDocsModal();
+            
+            const { data } = await supabase.from('students').select('*').eq('id', loggedInStudentId).single();
+            loggedInStudent = data;
+            renderProfile(data, document.getElementById('studentProfileDisplay'));
+            
+            const banner = document.createElement('div');
+            banner.className = 'success-banner';
+            banner.style.marginBottom = '1rem';
+            banner.innerHTML = `<i class="fas fa-check-circle"></i><div><h3>Documents submitted!</h3><p>Your updated documents have been sent to the office. Status is now <strong>Waiting Approval</strong>.</p></div>`;
+            const pd = document.getElementById('studentProfileDisplay');
+            pd.insertBefore(banner, pd.firstChild);
+        } catch (e) { alert('Update failed: ' + e.message); }
+    };
+
+    // -------- Page switching --------
+    window.switchPage = function(page) {
+        document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-section'));
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        if (page === 'login') {
+            document.getElementById('page-login').classList.add('active-section');
+            document.querySelector('.nav-tab[data-nav="login"]').classList.add('active');
+            if (loggedInStudentId && loggedInStudent) {
+                document.getElementById('loginFormWrapper').style.display = 'none';
+                document.getElementById('studentProfileCard').style.display = 'block';
+                renderProfile(loggedInStudent, document.getElementById('studentProfileDisplay'));
+            } else {
+                document.getElementById('loginFormWrapper').style.display = 'flex';
+                document.getElementById('studentProfileCard').style.display = 'none';
+            }
+        } else if (page === 'register') {
+            document.getElementById('page-register').classList.add('active-section');
+            document.querySelector('.nav-tab[data-nav="register"]').classList.add('active');
+        }
+    };
+
+    courseSearchInput.disabled = true;
+    switchPage('login');
+
+    document.getElementById('loginSurname').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('loginIdNumber').focus(); } });
+    document.getElementById('loginIdNumber').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); studentLogin(); } });
+</script>
+</body>
+</html>
